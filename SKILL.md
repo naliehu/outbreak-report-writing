@@ -123,7 +123,8 @@ $PY "$LITE" --event 事件.yaml --stage final \
 
 人名清单来自三处：事件 YAML 的人名键（`first_case.name`、`reporting.reporter` 等）、
 个案 CSV 的 `患者姓名/家长姓名/填卡医生` 列、以及 YAML 里 `privacy.names` 手工补的名单。
-正则兜底不依赖清单，所以手工写进正文的证件号也跑不掉。
+正则兜底不依赖清单，所以手工写进正文的证件号也跑不掉。什么时候该换、什么时候必须留、
+以及改这一层容易踩的坑，见 `references/data-sharing-and-desensitization.md` 第六节。
 
 规矩：**凡是没有明确说要在内部流转的稿子，一律用 `-脱敏` 那一份。**
 
