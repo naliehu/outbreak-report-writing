@@ -7,6 +7,12 @@
 - 第三个分发包 `outbreak-report-writing-1.2.1-macos-x86_64.tar.gz`：`vendor/venv` 里放的是独立的 x86_64 解释器（python-build-standalone 3.12.16），不依赖目标机的 python、也不怕 venv 里的解释器指向打包机器的绝对路径。Intel Mac 解压改路径即可跑全量引擎，不用 pip。
 - 该包已在本机用 `arch -x86_64` 逐项复验：`doctor` 8 项全绿、全量出稿（docx 内嵌图 4 / 表 17、pdf 16 页、三格式一致性全 1.0）、轻量出稿（完成度 38.9%、4 图、三格式 + 脱敏版）、`tests/test_core.py` 38 项全过。
 
+### 修复：arm64 包不再依赖本机 Python
+
+- 1.2.0 的 `macos-arm64` 包里，`vendor/venv` 是由 python.org 的 framework 版 Python 建的 venv，`bin/python` 只是个 152 KB 的壳，`sys.base_prefix` 指向 `/Library/Frameworks/Python.framework/Versions/3.12`——目标机没装过 python.org 3.12 就起不来。
+- 1.2.1 把 arm64 包也换成 python-build-standalone 3.12.16（arm64），`sys.base_prefix` 落在包内 `vendor/venv`，与 Intel 包、Windows 包的自包含程度一致。已解压到新路径复验：doctor 8/8、全量出稿全绿、轻量出稿 + 兜底 PDF、38 项测试全过。
+- 代价：包体从 59 MB 涨到 96 MB（多出的是完整解释器与 stdlib）。
+
 ### 新增：没装 LibreOffice 也能出 PDF
 
 - 原来 PDF 只有一条路：md → docx → `soffice --headless --convert-to pdf`。LibreOffice 在 macOS 上是 795 MB 的 .app，装不进发行包。

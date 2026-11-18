@@ -65,7 +65,7 @@ python3 ~/.dsh/skills/outbreak-report-writing/scripts/flowreport.py doctor
 
 | 平台 | 文件 | 装完即得的形态 |
 |---|---|---|
-| macOS（Apple Silicon） | `outbreak-report-writing-<ver>-macos-arm64.tar.gz` | 含 `vendor/venv`（arm64），解压改路径即用，无需 pip |
+| macOS（Apple Silicon） | `outbreak-report-writing-<ver>-macos-arm64.tar.gz` | 含 `vendor/venv`（arm64，自带独立解释器），解压改路径即用，无需 pip、不依赖本机 Python |
 | macOS（Intel） | `outbreak-report-writing-<ver>-macos-x86_64.tar.gz` | 含 `vendor/venv`（x86_64，自带独立解释器），Intel 机型解压即用，无需 pip |
 | Windows（x64） | `outbreak-report-writing-<ver>-windows-x64.zip` | 含 `vendor/` 代码但不含 venv，先跑一次 `install.ps1` 建环境（需 Python 3.10+） |
 | 任意平台 | `git clone` | 轻量版直接可用；要全量得自备 `vendor/` |

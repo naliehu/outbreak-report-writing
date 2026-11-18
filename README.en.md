@@ -48,7 +48,7 @@ Adds `vendor/` (~150 MB): `report.json` (93 fields) → 11 chapters / 17 tables 
 
 | Platform | File | What you get |
 |---|---|---|
-| macOS (Apple Silicon) | `outbreak-report-writing-<ver>-macos-arm64.tar.gz` | ships `vendor/venv` (arm64) — unpack and run, no pip needed |
+| macOS (Apple Silicon) | `outbreak-report-writing-<ver>-macos-arm64.tar.gz` | ships `vendor/venv` (arm64, self-contained interpreter) — unpack and run, no pip and no system Python needed |
 | macOS (Intel) | `outbreak-report-writing-<ver>-macos-x86_64.tar.gz` | ships `vendor/venv` (x86_64, self-contained interpreter) — unpack and run on Intel Macs, no pip needed |
 | Windows (x64) | `outbreak-report-writing-<ver>-windows-x64.zip` | ships `vendor/` code without venv — run `install.ps1` once (needs Python 3.10+) |
 | any | `git clone` | light mode works immediately; full mode needs your own `vendor/` |
