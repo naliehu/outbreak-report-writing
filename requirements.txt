@@ -1,9 +1,10 @@
-# 轻量引擎 scripts/build_report.py 只需前三项；全量引擎另需 jsonschema 与 pypdf。
+# 轻量引擎 scripts/build_report.py 只需 jinja2 / PyYAML / matplotlib / python-docx；全量引擎另需 jsonschema 与 pypdf。
 # numpy / Pillow 由 matplotlib 自动带入，无需单列。
 jinja2>=3.1
+PyYAML>=6.0
 matplotlib>=3.8
 python-docx>=1.1
 jsonschema>=4.20
 pypdf>=4.0
-# 可选：PDF 回读自检（页数 / 图片数 / 是否含汉字）与三格式一致性核对；缺它会退化。
-pymupdf>=1.24
+# 必需：PDF 回读自检（页数 / 图片数 / 是否含汉字）、三格式一致性核对，以及没装 LibreOffice 时的兜底排版。
+pymupdf>=1.24,<2

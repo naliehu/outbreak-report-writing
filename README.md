@@ -8,6 +8,8 @@
 这套东西不是简单的流调报告“模板”。它从 **1300 余份真实流调文稿**的结案报告里反向提炼：章节骨架来自 477 份报告的实测顺序，文风参数来自 16815 句的统计，
 病种判据来自原文写明的观察期与处置口径。
 
+一句话：给它事件信息加个案表，直接出 Word、PDF 和四张图；缺什么数据它会按「阻断传播、影响研判、完善叙述」三级排序列出来，告诉你 24 小时内还差什么。Mac 下载解压即用，Windows 跑一次 `install.ps1`。
+
 ## 解决什么问题
 
 | 老问题 | 这里的做法 |
@@ -64,10 +66,11 @@ python3 ~/.dsh/skills/outbreak-report-writing/scripts/flowreport.py doctor
 | 平台 | 文件 | 装完即得的形态 |
 |---|---|---|
 | macOS（Apple Silicon） | `outbreak-report-writing-<ver>-macos-arm64.tar.gz` | 含 `vendor/venv`（arm64），解压改路径即用，无需 pip |
+| macOS（Intel） | `outbreak-report-writing-<ver>-macos-x86_64.tar.gz` | 含 `vendor/venv`（x86_64，自带独立解释器），Intel 机型解压即用，无需 pip |
 | Windows（x64） | `outbreak-report-writing-<ver>-windows-x64.zip` | 含 `vendor/` 代码但不含 venv，先跑一次 `install.ps1` 建环境（需 Python 3.10+） |
 | 任意平台 | `git clone` | 轻量版直接可用；要全量得自备 `vendor/` |
 
-PDF 导出依赖 LibreOffice（macOS：`brew install --cask libreoffice`；Windows：装 LibreOffice 后默认在 Program Files 下，也可用 `SOFFICE_BIN` 指定）；md/docx 不依赖它。
+PDF 有两条路：装了 LibreOffice（macOS：`brew install --cask libreoffice`；Windows：装 LibreOffice 后默认在 Program Files 下，也可用 `SOFFICE_BIN` 指定）就走 docx→pdf，版式与 Word 完全一致；**没装也不必折腾**，程序会自动用内置的 PyMuPDF 排版引擎出 PDF（内容、图表、分页齐全，版式是独立一套，与 docx 版略有差别）。md/docx 不依赖任何外部程序。
 
 ## 快速上手
 

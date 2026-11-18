@@ -1,5 +1,23 @@
 # 变更记录
 
+## 1.2.1 — 2026-11-18
+
+### 新增：Intel 芯片的 Mac 也能解压即用
+
+- 第三个分发包 `outbreak-report-writing-1.2.1-macos-x86_64.tar.gz`：`vendor/venv` 里放的是独立的 x86_64 解释器（python-build-standalone 3.12.16），不依赖目标机的 python、也不怕 venv 里的解释器指向打包机器的绝对路径。Intel Mac 解压改路径即可跑全量引擎，不用 pip。
+- 该包已在本机用 `arch -x86_64` 逐项复验：`doctor` 8 项全绿、全量出稿（docx 内嵌图 4 / 表 17、pdf 16 页、三格式一致性全 1.0）、轻量出稿（完成度 38.9%、4 图、三格式 + 脱敏版）、`tests/test_core.py` 38 项全过。
+
+### 新增：没装 LibreOffice 也能出 PDF
+
+- 原来 PDF 只有一条路：md → docx → `soffice --headless --convert-to pdf`。LibreOffice 在 macOS 上是 795 MB 的 .app，装不进发行包。
+- 现在有兜底：新增 `scripts/md2pdf_fallback.py`，用 PyMuPDF 的 Story 排版引擎（MuPDF 自带）直接把 markdown 排成 A4 PDF，只依赖 `pymupdf`。无 `soffice` 时自动启用，内容、图表、分页齐全；版式是独立一套（表格列宽、图片缩放由 CSS 决定），与 docx 版略有差别。
+- 有 LibreOffice 时行为不变：仍走 docx→pdf，版式与 Word 完全一致。
+- 中文字体从系统里挑可用单字体（macOS `Arial Unicode.ttf`、Windows `msyh.ttc`/`simsun.ttc`、Linux Noto/WQY）；`.ttc` 集合字体用 fontTools 拆出单字重再用。
+
+### 修复
+
+- `requirements.txt` 补 `PyYAML>=6.0`（轻量引擎读事件 YAML、`tests/test_core.py` 都依赖它，缺了会直接报「需要 PyYAML」）；`pymupdf` 加 `<2` 上限（2026 年 2.x 会连带拉 onnxruntime 等 200 MB+ 依赖，venv 从 238 MB 涨到 376 MB）。
+
 ## 1.2.0 — 2026-11-18
 
 ### 新增：两个平台的分发包

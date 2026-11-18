@@ -40,7 +40,7 @@ python3 ~/.dsh/skills/outbreak-report-writing/scripts/flowreport.py doctor   # e
 
 Ergänzt `vendor/` (~150 MB): `report.json` (93 Felder) → 11 Kapitel / 17 Tabellen / 4 Abbildungen / 16-seitiges PDF, Lücken inline markiert und nach L1/L2/L3 bewertet, Top-3-Blocker auf dem Deckblatt, Phasen-Snapshots, Konsistenzprüfung md=docx=pdf. Das `vendor/venv` ist architekturspezifisch — auf anderer Plattform `bash install.sh` bzw. `install.ps1` ausführen.
 
-Plattformpakete in den Releases: macOS (Apple Silicon) mit venv, Windows (x64) ohne venv (einmal `install.ps1`). PDF braucht LibreOffice, md/docx nicht.
+Plattformpakete in den Releases: macOS (Apple Silicon) mit venv, macOS (Intel) ebenfalls mit venv (eigenständiger x86_64-Interpreter) — beide auspacken und loslegen; Windows (x64) ohne venv (einmal `install.ps1`). PDF hat zwei Wege: mit LibreOffice läuft md → docx → pdf mit identischem Layout wie Word; ohne LibreOffice greift automatisch die eingebaute PyMuPDF-Engine (Inhalt, Abbildungen und Seitenumbruch vollständig, eigenes Layout). md/docx brauchen nichts Zusätzliches.
 
 ## Schnellstart
 
@@ -108,7 +108,7 @@ Abhängigkeiten degradieren bei Bedarf:
 |---|---|
 | python3 + pyyaml + jinja2 | Markdown-Text (Abbildungen und Word entfallen mit Begründung) |
 | + matplotlib | dazu vier erzählende Abbildungen und drei Verteilungscharts |
-| + python-docx | dazu Word; PDF zusätzlich, wenn LibreOffice vorhanden ist |
+| + python-docx | dazu Word; PDF immer (PyMuPDF-Fallback ohne LibreOffice) |
 
 Alles auf einmal: `python3 -m pip install pyyaml jinja2 matplotlib python-docx`
 

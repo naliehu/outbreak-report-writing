@@ -708,9 +708,21 @@ def _find_soffice():
     return None
 
 
-def to_pdf(docx_path, out_dir):
+def to_pdf(docx_path, out_dir, md_path=None):
     office = _find_soffice()
     if not office:
+        # 没有 LibreOffice：走 PyMuPDF 兜底排版（内容一致、版式独立一套）
+        if md_path:
+            try:
+                import sys as _sys
+                _here = os.path.dirname(os.path.abspath(__file__))
+                if _here not in _sys.path:
+                    _sys.path.insert(0, _here)
+                from md2pdf_fallback import md_to_pdf
+                pdf = md_to_pdf(md_path, os.path.splitext(docx_path)[0] + ".pdf")
+                return str(pdf), None
+            except Exception as exc:
+                return None, f"未找到 LibreOffice，兜底 PDF 也失败：{exc}"
         return None, ("未找到 LibreOffice（soffice）。md/docx 已生成，PDF 需要它："
                       "macOS 用 brew install --cask libreoffice，Windows 装 LibreOffice，"
                       "或用环境变量 SOFFICE_BIN 指定路径")
@@ -802,7 +814,7 @@ def build(event_path, out_dir, stage="initial", line_list=None, formats=("md", "
             got_path, err = to_docx(md_path, docx_path, docx_profile)
             got["docx"] = got_path or err
             if got_path and "pdf" in formats:
-                pdf, err2 = to_pdf(got_path, out_dir)
+                pdf, err2 = to_pdf(got_path, out_dir, md_path=md_path)
                 got["pdf"] = pdf or err2
         elif "pdf" in formats:
             got["pdf"] = "PDF 需先导出 docx（Word 渲染链路），已跳过"

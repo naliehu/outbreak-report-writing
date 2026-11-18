@@ -40,7 +40,7 @@ python3 ~/.dsh/skills/outbreak-report-writing/scripts/flowreport.py doctor   # �
 
 多出 `vendor/`（約 150 MB）：`report.json`（93 欄位）→ 11 章 / 17 表 / 4 圖 / 16 頁 PDF，缺項就地高亮並按 L1/L2/L3 判定是否阻斷定稿，封面給 Top3 必補項，另存階段快照並核對三格式一致。`vendor/venv` 依打包機器架構編譯，換平台請跑 `bash install.sh` 或 `install.ps1` 重建。
 
-平台包見 Releases：macOS（Apple Silicon）含 venv 解壓即用；Windows（x64）不含 venv，先跑 `install.ps1`。PDF 需 LibreOffice，md/docx 不需要。
+平台包見 Releases：macOS（Apple Silicon）含 venv 解壓即用；macOS（Intel）同樣含 venv（x86_64 獨立解釋器）解壓即用；Windows（x64）不含 venv，先跑 `install.ps1`。PDF 有兩條路：裝了 LibreOffice 走 docx→pdf，版式與 Word 一致；沒裝會自動用內建 PyMuPDF 排版引擎出 PDF（內容、圖表、分頁齊全，版式獨立一套）。md/docx 不需要任何外部程式。
 
 ## 快速上手
 
@@ -109,7 +109,7 @@ dsh --profile web          # 重新啟動後生效，直接說「用 epi_report 
 |---|---|
 | python3 + pyyaml + jinja2 | Markdown 本文（圖與 Word 自動省略，並註明原因） |
 | 再加上 matplotlib | 加四張敘事圖與三張分布圖 |
-| 再加上 python-docx | 加 Word；系統有 LibreOffice 則連 PDF 一起出 |
+| 再加上 python-docx | 加 Word；PDF 一律出（無 LibreOffice 時走 PyMuPDF 兜底） |
 
 一次裝齊：`python3 -m pip install pyyaml jinja2 matplotlib python-docx`
 

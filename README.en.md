@@ -49,10 +49,11 @@ Adds `vendor/` (~150 MB): `report.json` (93 fields) → 11 chapters / 17 tables 
 | Platform | File | What you get |
 |---|---|---|
 | macOS (Apple Silicon) | `outbreak-report-writing-<ver>-macos-arm64.tar.gz` | ships `vendor/venv` (arm64) — unpack and run, no pip needed |
+| macOS (Intel) | `outbreak-report-writing-<ver>-macos-x86_64.tar.gz` | ships `vendor/venv` (x86_64, self-contained interpreter) — unpack and run on Intel Macs, no pip needed |
 | Windows (x64) | `outbreak-report-writing-<ver>-windows-x64.zip` | ships `vendor/` code without venv — run `install.ps1` once (needs Python 3.10+) |
 | any | `git clone` | light mode works immediately; full mode needs your own `vendor/` |
 
-PDF export needs LibreOffice (`brew install --cask libreoffice` on macOS; on Windows install LibreOffice and it sits under Program Files, or point `SOFFICE_BIN` at it). md/docx need nothing extra.
+PDF export has two routes. With LibreOffice installed (`brew install --cask libreoffice` on macOS; on Windows it lands under Program Files, or point `SOFFICE_BIN` at it) the pipeline is md → docx → pdf and the layout matches Word exactly. Without it, nothing breaks: the built-in PyMuPDF layout engine produces the PDF directly (all content, figures and pagination; layout is its own scheme, slightly different from the docx version). md/docx need nothing extra.
 
 ## Quick start
 
@@ -120,7 +121,7 @@ Dependencies degrade on demand:
 |---|---|
 | python3 + pyyaml + jinja2 | Markdown body (figures and Word are skipped with a stated reason) |
 | + matplotlib | plus four narrative figures and three distribution charts |
-| + python-docx | plus Word; PDF as well if LibreOffice is present |
+| + python-docx | plus Word; PDF always (PyMuPDF fallback if LibreOffice is absent) |
 
 Install everything at once: `python3 -m pip install pyyaml jinja2 matplotlib python-docx`
 

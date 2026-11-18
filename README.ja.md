@@ -40,7 +40,7 @@ python3 ~/.dsh/skills/outbreak-report-writing/scripts/flowreport.py doctor   # 8
 
 `vendor/`（約 150 MB）が加わり、`report.json`（93 項目）→ 11 章 / 表 17 / 図 4 / 16 ページ PDF、不足項目は本文中で強調され L1/L2/L3 で確定可否を判定、表紙に Top3 必須項目、段階スナップショット、md=docx=pdf の一致検証まで。`vendor/venv` はビルドしたマシンのアーキテクチャ依存なので、別環境では `install.sh` / `install.ps1` で再構築してください。
 
-プラットフォーム別パッケージは Releases に：macOS（Apple Silicon）は venv 同梱、Windows（x64）は venv 無しで `install.ps1` を一度実行。PDF には LibreOffice が必要（md/docx は不要）。
+プラットフォーム別パッケージは Releases に：macOS（Apple Silicon）は venv 同梱、macOS（Intel）も venv（x86_64 独立インタプリタ）同梱で解凍するだけ、Windows（x64）は venv 無しで `install.ps1` を一度実行。PDF は二通り：LibreOffice があれば md → docx → pdf で Word と同一レイアウト、無くても内蔵の PyMuPDF 組版エンジンが自動で PDF を生成（内容・図表・改ページは揃うがレイアウトは独自）。md/docx は追加ソフト不要。
 
 ## クイックスタート
 
@@ -108,7 +108,7 @@ dsh --profile web          # 再起動後に有効。「epi_report で初回報�
 |---|---|
 | python3 + pyyaml + jinja2 | Markdown本文（図とWordは理由を明記して省略） |
 | さらに matplotlib | ナラティブ図4枚と分布図3枚を追加 |
-| さらに python-docx | Wordを追加。LibreOfficeがあればPDFも |
+| さらに python-docx | Wordを追加。PDFは常に出る（LibreOffice不在時はPyMuPDFで代替） |
 
 一括導入：`python3 -m pip install pyyaml jinja2 matplotlib python-docx`
 
