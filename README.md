@@ -119,7 +119,7 @@ tests/                    单测
 examples/                 三个可跑示例 + 已生成成品
 ```
 
-## 推广给同事
+## 推广
 
 1. **整体拷走**：`outbreak-report-writing/` 整个目录（含 `vendor/venv`，约 150 MB）给同事，`python3 scripts/build_report.py` 就能跑，不需要联网、不需要 pip。
 2. **只要模板**：把 `templates/*.j2` + `references/06-文风与句式库.md` 拷走，手工填也是一份合规报告——技能的价值有一半在这个文档里。
