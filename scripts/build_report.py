@@ -20,6 +20,7 @@ import datetime as dt
 import json
 import os
 import re
+import shutil
 import subprocess
 import sys
 
@@ -684,14 +685,35 @@ def to_docx(md_path, docx_path, profile="default"):
         return None, f"docx 生成失败：{e}"
 
 
+def _find_soffice():
+    """按平台找 LibreOffice 可执行文件：环境变量 → PATH → 各平台默认安装位置。"""
+    env = os.environ.get("SOFFICE_BIN")
+    if env and os.path.exists(env):
+        return env
+    for name in ("soffice", "libreoffice"):
+        hit = shutil.which(name)
+        if hit:
+            return hit
+    cands = [
+        "/Applications/LibreOffice.app/Contents/MacOS/soffice",   # macOS
+        "/opt/homebrew/bin/soffice",
+        "/usr/bin/soffice",                                        # Linux
+        "/usr/local/bin/soffice",
+        r"C:\Program Files\LibreOffice\program\soffice.exe",     # Windows
+        r"C:\Program Files (x86)\LibreOffice\program\soffice.exe",
+    ]
+    for cand in cands:
+        if os.path.exists(cand):
+            return cand
+    return None
+
+
 def to_pdf(docx_path, out_dir):
-    office = None
-    for cand in ("/opt/homebrew/bin/soffice", "/Applications/LibreOffice.app/Contents/MacOS/soffice", "soffice"):
-        if os.path.exists(cand) or cand == "soffice":
-            office = cand
-            break
+    office = _find_soffice()
     if not office:
-        return None, "未找到 LibreOffice，可先导出 docx 再手动转 PDF"
+        return None, ("未找到 LibreOffice（soffice）。md/docx 已生成，PDF 需要它："
+                      "macOS 用 brew install --cask libreoffice，Windows 装 LibreOffice，"
+                      "或用环境变量 SOFFICE_BIN 指定路径")
     env = dict(os.environ, HOME=os.path.expanduser("~"))
     r = subprocess.run([office, "--headless", "--convert-to", "pdf", "--outdir", out_dir, docx_path],
                        capture_output=True, timeout=300, env=env)

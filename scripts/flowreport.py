@@ -143,10 +143,15 @@ def cmd_doctor(args) -> int:
     check("pypdf", lambda: _ver("pypdf"))
 
     def _soffice():
-        exe = shutil.which("soffice") or shutil.which("libreoffice")
+        exe = (os.environ.get("SOFFICE_BIN") or shutil.which("soffice")
+               or shutil.which("libreoffice"))
         if not exe:
-            mac = Path("/Applications/LibreOffice.app/Contents/MacOS/soffice")
-            exe = str(mac) if mac.exists() else None
+            for cand in ("/Applications/LibreOffice.app/Contents/MacOS/soffice",
+                         r"C:\Program Files\LibreOffice\program\soffice.exe",
+                         r"C:\Program Files (x86)\LibreOffice\program\soffice.exe"):
+                if Path(cand).exists():
+                    exe = cand
+                    break
         if not exe:
             raise RuntimeError("未安装 → 只能出 md/docx，PDF 需 LibreOffice")
         return exe

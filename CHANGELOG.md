@@ -21,6 +21,8 @@
 
 - `index.js` `resolvePython()`：按平台选 `vendor/venv/bin/python`（macOS/Linux）或 `vendor/venv/Scripts/python.exe`（Windows）；系统解释器回退为 `python3` / `python`。
 - `scripts/epi_viz.py`：中文字体候选补 `Microsoft YaHei`、`SimSun`。
+- `scripts/build_report.py`：新增 `_find_soffice()`，按 `SOFFICE_BIN` 环境变量 → `PATH` → 各平台默认安装位置顺序找 LibreOffice；原来的候选里 `"soffice"` 会被无条件当作可用，Windows 上未装 PATH 时直接抛 `FileNotFoundError`，现在找不到就返回提示「md/docx 已生成，PDF 需要它」而不中断出稿。
+- `scripts/flowreport.py`：`doctor` 的 `_soffice()` 同样改为环境变量 + `PATH` + 三平台路径，Windows 装了 LibreOffice 也能自检通过。
 - `vendor/report_export/docx_writer.py`：正文/标题中文字体按 `sys.platform` 选择 —— Windows 宋体/黑体、macOS Songti SC/Heiti SC、其他 Noto CJK。
 - `vendor/report_export/pdf_writer.py`：`SOFFICE_CANDIDATES` 补 `C:\Program Files\LibreOffice\program\soffice.exe` 等两个 Windows 路径；未找到时的提示补 Windows 说明。
 

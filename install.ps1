@@ -1,4 +1,4 @@
-# 传染病流调报告撰写技能 —— Windows 环境安装脚本
+﻿# 传染病流调报告撰写技能 —— Windows 环境安装脚本
 # 用法（在本目录打开 PowerShell）：
 #   powershell -ExecutionPolicy Bypass -File .\install.ps1
 #
