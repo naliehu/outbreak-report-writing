@@ -78,6 +78,31 @@ def _d(v, fmt="%Y年%-m月%-d日"):
 
 
 # ------------------------------------------------------------------ 视图
+def _fill_case_def(prof, ev, dates):
+    """病种档案的病例定义里留了 <起止>/<机构> 占位符，按事件数据回填。
+    宁可留占位符也不编造：真缺值就保留原样，让读者一眼看出没填。"""
+    if not prof:
+        return prof
+    prof = dict(prof)
+    txt = prof.get("case_def")
+    if not isinstance(txt, str):
+        return prof
+    a, b = dates.get("first_onset"), dates.get("last_onset")
+    fa, fb = _d(a), _d(b, "%Y年%-m月%-d日" if not a else "%-m月%-d日")
+    span = ""
+    if a and b:
+        span = f"{fa}至{fb}"
+    elif a or b:
+        span = fa if a else fb
+    inst = (ev.get("institution") or {}).get("name") or ev.get("place_short") or ""
+    if span:
+        txt = txt.replace("<起止>", span)
+    if inst:
+        txt = txt.replace("<机构>", inst)
+    prof["case_def"] = txt
+    return prof
+
+
 class View(dict):
     """模板变量容器：dict 访问 + 计算文本属性。"""
 
@@ -96,7 +121,8 @@ class View(dict):
         self["dates"] = dict(ctx.get("dates") or {})
         self["reporting"] = dict((ctx.get("event") or {}).get("reporting")
                                  or ctx.get("reporting") or {})
-        self["profile"] = prof
+        self["profile"] = _fill_case_def(
+            prof, ctx.get("event") or {}, ctx.get("dates") or {})
         self["stats"] = ctx.get("stats") or {}
         self["completeness"] = ctx.get("completeness") or {}
         self["pass"] = 1

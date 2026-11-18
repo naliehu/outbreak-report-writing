@@ -17,6 +17,8 @@ Das hier ist keine einfache Ausbruchsbericht-„Vorlage". Es wurde aus den Absch
 | Unklar, welche wichtigen Angaben noch zu ermitteln sind | Die P0-Punkte in Anhang A sind die entscheidenden; eine 12-Punkte-Selbstprüfung geht sie durch |
 | Abschlussbericht ohne Kosten-Nutzen-Analyse | Abschnitt 9 gliedert die Kosten nach den nationalen Standardkategorien und liefert die Tabelle |
 
+> **⚠️ Ein GitHub-Clone enthält kein `vendor/`.** Der Ordner `vendor/` (~150 MB: `spec`, `report_engine`, `flowfig`, `report_export`, `venv`) ist per `.gitignore` ausgeschlossen und muss separat beschafft und in das Skill-Wurzelverzeichnis gelegt werden. Ohne ihn ist die **vollständige Engine** `scripts/flowreport.py` nicht nutzbar („vendor 目录不完整"), während die **schmale Template-Engine** `scripts/build_report.py` unten eigenständig und sofort einsatzbereit ist.
+
 ## Schnellstart
 
 ```bash

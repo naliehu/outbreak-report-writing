@@ -19,6 +19,8 @@
 | 写完不知道还需流调哪些重要信息 | 附录 A 的 P0 就是核心信息，自检 12 问逐条过 |
 | 结案报告缺成本效益分析 | 第九节按国家标准科目分项，直接给表格 |
 
+> **⚠️ 从 GitHub clone 的版本不含 `vendor/`。** `vendor/`（约 150 MB，含 `spec`、`report_engine`、`flowfig`、`report_export` 与 `venv`）被 `.gitignore` 排除，需另行取得并放回技能根目录。缺它时**全量引擎** `scripts/flowreport.py` 不可用（报「vendor 目录不完整」），而下面的**轻量模板引擎** `scripts/build_report.py` 自包含、开箱即用。
+
 ## 快速上手
 
 ```bash

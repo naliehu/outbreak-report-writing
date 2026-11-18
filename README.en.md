@@ -17,6 +17,8 @@ This is not a simple outbreak-report "template". It was reverse-engineered from 
 | Unsure which important information still needs investigating | The P0 items in Appendix A are the critical ones; a 12-question self-check walks through them |
 | Closure report missing a cost-benefit analysis | Section 9 breaks costs down by the national standard categories and gives you the table |
 
+> **⚠️ A GitHub clone does not include `vendor/`.** The `vendor/` tree (~150 MB: `spec`, `report_engine`, `flowfig`, `report_export`, `venv`) is excluded by `.gitignore` and must be obtained separately and placed in the skill root. Without it the **full engine** `scripts/flowreport.py` fails ("vendor 目录不完整"), while the **lightweight template engine** `scripts/build_report.py` below is self-contained and works out of the box.
+
 ## Quick start
 
 ```bash

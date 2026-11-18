@@ -53,7 +53,7 @@ diseases:
     latent_max_days: 3
     isolation_rule: "症状消失后72小时方可复课/复工；病例呕吐物、粪便按疫点消毒规范处置"
     closure_rule: "最后1例病例发病并隔离后经过2个最长潜伏期（6天）无新发病例"
-    case_def: "疑似病例：<起止>起，<机构>学生及教职工24小时内排便≥3次且大便性状改变（稀便、水样便等）和/或24小时内呕吐≥2次者。确诊病例：疑似病例粪便、肛拭子或呕吐物诺如病毒核酸检测阳性"
+    case_def: "疑似病例：<起止>，<机构>学生及教职工24小时内排便≥3次且大便性状改变（稀便、水样便等）和/或24小时内呕吐≥2次者。确诊病例：疑似病例粪便、肛拭子或呕吐物诺如病毒核酸检测阳性"
     key_exposures: ["共同就餐/点心", "直饮水与二次供水", "呕吐物处置与同室暴露", "食堂从业人员健康状况", "近14天校外聚餐"]
     required_figures: [epicurve, group_bar]
     optional_figures: [transmission_chain, generation, school_map, floor_map, env_sampling]
