@@ -50,17 +50,15 @@ function resolveSkillDir(config) {
   return PKG_DIR
 }
 
-/** 解释器：配置 → vendor/venv → python3。 */
+/** 解释器：配置 → vendor/venv（按平台选 bin/python 或 Scripts/python.exe）→ 系统 python。 */
 function resolvePython(skillDir, config) {
-  const candidates = [
-    config?.python,
-    path.join(skillDir, 'vendor', 'venv', 'bin', 'python'),
-    'python3',
-  ].filter(Boolean)
-  for (const py of candidates) {
-    if (py === 'python3' || existsSync(py)) return py
-  }
-  return 'python3'
+  if (config?.python) return config.python
+  const venv = path.join(skillDir, 'vendor', 'venv')
+  const venvPy = process.platform === 'win32'
+    ? path.join(venv, 'Scripts', 'python.exe')
+    : path.join(venv, 'bin', 'python')
+  if (existsSync(venvPy)) return venvPy
+  return process.platform === 'win32' ? 'python' : 'python3'
 }
 
 function run(cmd, args, cwd, timeoutMs = 900_000) {

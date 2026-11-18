@@ -21,10 +21,59 @@
 
 > **⚠️ 从 GitHub clone 的版本不含 `vendor/`。** `vendor/`（约 150 MB，含 `spec`、`report_engine`、`flowfig`、`report_export` 与 `venv`）被 `.gitignore` 排除，需另行取得并放回技能根目录。缺它时**全量引擎** `scripts/flowreport.py` 不可用（报「vendor 目录不完整」），而下面的**轻量模板引擎** `scripts/build_report.py` 自包含、开箱即用。
 
+## 安装（两条路，选一条）
+
+### A. 轻量版 —— clone 就能用
+
+```bash
+git clone --depth 1 https://github.com/naliehu/outbreak-report-writing.git
+mkdir -p ~/.dsh/skills
+rsync -a --exclude=.git outbreak-report-writing/ ~/.dsh/skills/outbreak-report-writing/
+python3 -m pip install --user jinja2 matplotlib python-docx
+```
+
+**装完是什么样**：目录里没有 `vendor/`，能用的只有 `scripts/build_report.py` 一条路。
+
+**能干**：事件 YAML（五个字段起）+ 个案 CSV → 六种体裁正文 + 4 张图 + md/docx/pdf（附脱敏版）+ 附录 A 缺项分级（P0 24 小时 / P1 48 小时 / P2 结案前）。
+
+**干不了**：没有 93 字段模型校验，没有 L1/L2/L3 定稿阻断判定，没有「数据不全改图注」的降级矩阵，没有阶段快照与三格式一致性核对。此时 `scripts/flowreport.py doctor` 会红：
+
+```
+✗ 规格包 vendor/spec   vendor 目录不完整，找不到 report_engine：No module named 'report_engine'
+```
+
+### B. 全量版 —— 把 `vendor/` 一起带上
+
+```bash
+# 从一台已有 vendor 的机器整体同步（含 venv），不要用 git clone 拿这一份
+rsync -a --exclude=.git --exclude=__pycache__ \
+  /path/to/已有完整副本/ ~/.dsh/skills/outbreak-report-writing/
+
+# 自检：八项全绿再往下走
+python3 ~/.dsh/skills/outbreak-report-writing/scripts/flowreport.py doctor
+```
+
+**装完是什么样**：多出 `vendor/`（约 150 MB），doctor 打印 `✓ 规格包 vendor/spec  93 字段 / 11 章 / schema …`。
+
+**能干**：`report.json`（93 字段）→ 11 章 / 17 表 / 4 图 / 16 页 PDF；缺项在正文就地高亮并按 L1/L2/L3 判定是否阻断定稿；封面给 Top3 必补项；第十章给逐条补采途径与时限；存阶段快照；核对 md=docx=pdf 三格式一致。
+
+**注意**：`vendor/venv` 里的 Python 按打包机器的架构编译，换平台会失效——脚本与插件会自动回退到系统 `python3`，装齐 `requirements.txt` 里的依赖即可；也可跑 `bash install.sh`（macOS／Linux）或 `powershell -ExecutionPolicy Bypass -File install.ps1`（Windows）现场重建 venv。
+
+### 平台包（Releases）
+
+| 平台 | 文件 | 装完即得的形态 |
+|---|---|---|
+| macOS（Apple Silicon） | `outbreak-report-writing-<ver>-macos-arm64.tar.gz` | 含 `vendor/venv`（arm64），解压改路径即用，无需 pip |
+| Windows（x64） | `outbreak-report-writing-<ver>-windows-x64.zip` | 含 `vendor/` 代码但不含 venv，先跑一次 `install.ps1` 建环境（需 Python 3.10+） |
+| 任意平台 | `git clone` | 轻量版直接可用；要全量得自备 `vendor/` |
+
+PDF 导出依赖 LibreOffice（macOS：`brew install --cask libreoffice`；Windows：装 LibreOffice 后默认在 Program Files 下，也可用 `SOFFICE_BIN` 指定）；md/docx 不依赖它。
+
 ## 快速上手
 
 ```bash
 cd ~/.hermes/skills/outbreak-report-writing
+# 全量装法用 venv 解释器；轻量装法把这行换成 PY="python3"
 PY="env -u PYTHONPATH -u VIRTUAL_ENV vendor/venv/bin/python"
 
 # 只有五个字段也能出稿

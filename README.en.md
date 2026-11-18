@@ -19,6 +19,41 @@ This is not a simple outbreak-report "template". It was reverse-engineered from 
 
 > **⚠️ A GitHub clone does not include `vendor/`.** The `vendor/` tree (~150 MB: `spec`, `report_engine`, `flowfig`, `report_export`, `venv`) is excluded by `.gitignore` and must be obtained separately and placed in the skill root. Without it the **full engine** `scripts/flowreport.py` fails ("vendor 目录不完整"), while the **lightweight template engine** `scripts/build_report.py` below is self-contained and works out of the box.
 
+## Install (two ways, pick one)
+
+### A. Light — clone and go
+
+```bash
+git clone --depth 1 https://github.com/naliehu/outbreak-report-writing.git
+mkdir -p ~/.dsh/skills
+rsync -a --exclude=.git outbreak-report-writing/ ~/.dsh/skills/outbreak-report-writing/
+python3 -m pip install --user jinja2 matplotlib python-docx
+```
+
+No `vendor/` in this mode, so only `scripts/build_report.py` works: event YAML (five fields is enough) + line-list CSV → six report genres + 4 figures + md/docx/pdf (plus a redacted copy) + Appendix A gap list graded P0 (24 h) / P1 (48 h) / P2 (before closure). No 93-field validation, no L1/L2/L3 finalisation gate, no stage snapshot, no cross-format consistency check — `scripts/flowreport.py doctor` will report a missing `vendor/spec`.
+
+### B. Full — bring `vendor/` along
+
+```bash
+rsync -a --exclude=.git --exclude=__pycache__ \
+  /path/to/complete-copy/ ~/.dsh/skills/outbreak-report-writing/
+python3 ~/.dsh/skills/outbreak-report-writing/scripts/flowreport.py doctor   # all eight green before use
+```
+
+Adds `vendor/` (~150 MB): `report.json` (93 fields) → 11 chapters / 17 tables / 4 figures / 16-page PDF, gaps highlighted in place and graded L1/L2/L3 to decide whether finalisation is blocked, top-3 blockers on the cover, per-item collection routes in chapter 10, stage snapshots, and md=docx=pdf consistency verification.
+
+`vendor/venv` is architecture-specific: on another platform the scripts fall back to system `python3`, so install `requirements.txt` there, or run `bash install.sh` (macOS/Linux) / `powershell -ExecutionPolicy Bypass -File install.ps1` (Windows) to rebuild the venv.
+
+### Platform bundles (Releases)
+
+| Platform | File | What you get |
+|---|---|---|
+| macOS (Apple Silicon) | `outbreak-report-writing-<ver>-macos-arm64.tar.gz` | ships `vendor/venv` (arm64) — unpack and run, no pip needed |
+| Windows (x64) | `outbreak-report-writing-<ver>-windows-x64.zip` | ships `vendor/` code without venv — run `install.ps1` once (needs Python 3.10+) |
+| any | `git clone` | light mode works immediately; full mode needs your own `vendor/` |
+
+PDF export needs LibreOffice (`brew install --cask libreoffice` on macOS; on Windows install LibreOffice and it sits under Program Files, or point `SOFFICE_BIN` at it). md/docx need nothing extra.
+
 ## Quick start
 
 ```bash

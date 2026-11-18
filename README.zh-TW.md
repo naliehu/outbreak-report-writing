@@ -19,6 +19,29 @@
 
 > **⚠️ 從 GitHub clone 的版本不含 `vendor/`。** `vendor/`（約 150 MB，含 `spec`、`report_engine`、`flowfig`、`report_export` 與 `venv`）被 `.gitignore` 排除，需另行取得並放回技能根目錄。缺它時**全量引擎** `scripts/flowreport.py` 不可用（報「vendor 目錄不完整」），而下面的**輕量模板引擎** `scripts/build_report.py` 自包含、開箱即用。
 
+## 安裝（兩條路，選一條）
+
+### A. 輕量版 —— clone 就能用
+
+```bash
+git clone --depth 1 https://github.com/naliehu/outbreak-report-writing.git
+rsync -a --exclude=.git outbreak-report-writing/ ~/.dsh/skills/outbreak-report-writing/
+python3 -m pip install --user jinja2 matplotlib python-docx
+```
+
+裝完沒有 `vendor/`，只有 `scripts/build_report.py` 走得通：事件 YAML + 個案 CSV → 六種體裁 + 4 張圖 + md/docx/pdf（含脫敏版）+ 附錄 A 缺項分級（P0 24 小時 / P1 48 小時 / P2 結案前）。沒有 93 欄位校驗、沒有 L1/L2/L3 定稿阻斷、沒有階段快照。
+
+### B. 全量版 —— 連 `vendor/` 一起帶
+
+```bash
+rsync -a --exclude=.git --exclude=__pycache__ /path/to/完整副本/ ~/.dsh/skills/outbreak-report-writing/
+python3 ~/.dsh/skills/outbreak-report-writing/scripts/flowreport.py doctor   # 八項全綠再用
+```
+
+多出 `vendor/`（約 150 MB）：`report.json`（93 欄位）→ 11 章 / 17 表 / 4 圖 / 16 頁 PDF，缺項就地高亮並按 L1/L2/L3 判定是否阻斷定稿，封面給 Top3 必補項，另存階段快照並核對三格式一致。`vendor/venv` 依打包機器架構編譯，換平台請跑 `bash install.sh` 或 `install.ps1` 重建。
+
+平台包見 Releases：macOS（Apple Silicon）含 venv 解壓即用；Windows（x64）不含 venv，先跑 `install.ps1`。PDF 需 LibreOffice，md/docx 不需要。
+
 ## 快速上手
 
 ```bash

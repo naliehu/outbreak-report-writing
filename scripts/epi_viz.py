@@ -26,7 +26,8 @@ import numpy as np
 # ------------------------------------------------------------------ 样式
 
 CJK_CANDIDATES = ["Songti SC", "Heiti SC", "STSong", "Hiragino Sans GB",
-                  "Arial Unicode MS", "PingFang SC", "Noto Sans CJK SC", "SimHei"]
+                  "Arial Unicode MS", "PingFang SC", "Noto Sans CJK SC", "SimHei",
+                  "Microsoft YaHei", "SimSun"]
 _FONT = None
 
 

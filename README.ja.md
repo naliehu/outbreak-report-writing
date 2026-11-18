@@ -19,6 +19,29 @@
 
 > **⚠️ GitHub から clone した版には `vendor/` が含まれません。** `vendor/`（約 150 MB：`spec`、`report_engine`、`flowfig`、`report_export`、`venv`）は `.gitignore` で除外されているため、別途入手してスキルのルートに置く必要があります。無い場合、**フルエンジン** `scripts/flowreport.py` は動作せず（「vendor 目录不完整」）、下記の**軽量テンプレートエンジン** `scripts/build_report.py` は自己完結でそのまま使えます。
 
+## インストール（2通り、どちらか一方）
+
+### A. ライト版 — clone ですぐ動く
+
+```bash
+git clone --depth 1 https://github.com/naliehu/outbreak-report-writing.git
+rsync -a --exclude=.git outbreak-report-writing/ ~/.dsh/skills/outbreak-report-writing/
+python3 -m pip install --user jinja2 matplotlib python-docx
+```
+
+`vendor/` が無いため使えるのは `scripts/build_report.py` のみ：事象 YAML（5 項目から可）+ 症例リスト CSV → 6 種類の様式 + 図 4 枚 + md/docx/pdf（匿名化版つき）+ 付録 A の不足項目（P0 24 時間 / P1 48 時間 / P2 結案前）。93 項目検証・L1/L2/L3 確定ゲート・段階スナップショットはありません。
+
+### B. フル版 — `vendor/` ごと導入
+
+```bash
+rsync -a --exclude=.git --exclude=__pycache__ /完全コピーのパス/ ~/.dsh/skills/outbreak-report-writing/
+python3 ~/.dsh/skills/outbreak-report-writing/scripts/flowreport.py doctor   # 8 項目すべて緑で次へ
+```
+
+`vendor/`（約 150 MB）が加わり、`report.json`（93 項目）→ 11 章 / 表 17 / 図 4 / 16 ページ PDF、不足項目は本文中で強調され L1/L2/L3 で確定可否を判定、表紙に Top3 必須項目、段階スナップショット、md=docx=pdf の一致検証まで。`vendor/venv` はビルドしたマシンのアーキテクチャ依存なので、別環境では `install.sh` / `install.ps1` で再構築してください。
+
+プラットフォーム別パッケージは Releases に：macOS（Apple Silicon）は venv 同梱、Windows（x64）は venv 無しで `install.ps1` を一度実行。PDF には LibreOffice が必要（md/docx は不要）。
+
 ## クイックスタート
 
 ```bash

@@ -19,6 +19,29 @@ Das hier ist keine einfache Ausbruchsbericht-„Vorlage". Es wurde aus den Absch
 
 > **⚠️ Ein GitHub-Clone enthält kein `vendor/`.** Der Ordner `vendor/` (~150 MB: `spec`, `report_engine`, `flowfig`, `report_export`, `venv`) ist per `.gitignore` ausgeschlossen und muss separat beschafft und in das Skill-Wurzelverzeichnis gelegt werden. Ohne ihn ist die **vollständige Engine** `scripts/flowreport.py` nicht nutzbar („vendor 目录不完整"), während die **schmale Template-Engine** `scripts/build_report.py` unten eigenständig und sofort einsatzbereit ist.
 
+## Installation (zwei Wege, einen wählen)
+
+### A. Schlank — klonen und loslegen
+
+```bash
+git clone --depth 1 https://github.com/naliehu/outbreak-report-writing.git
+rsync -a --exclude=.git outbreak-report-writing/ ~/.dsh/skills/outbreak-report-writing/
+python3 -m pip install --user jinja2 matplotlib python-docx
+```
+
+Ohne `vendor/` funktioniert nur `scripts/build_report.py`: Ereignis-YAML + Fallliste-CSV → sechs Berichtsgenres + 4 Abbildungen + md/docx/pdf (inkl. anonymisierter Fassung) + Anhang A mit Lückenklassen P0 (24 h) / P1 (48 h) / P2 (vor Abschluss). Keine 93-Feld-Prüfung, keine L1/L2/L3-Freigabeschwelle, kein Phasen-Snapshot.
+
+### B. Vollständig — `vendor/` mitnehmen
+
+```bash
+rsync -a --exclude=.git --exclude=__pycache__ /pfad/zur/vollstaendigen/kopie/ ~/.dsh/skills/outbreak-report-writing/
+python3 ~/.dsh/skills/outbreak-report-writing/scripts/flowreport.py doctor   # erst weiter, wenn alle acht grün sind
+```
+
+Ergänzt `vendor/` (~150 MB): `report.json` (93 Felder) → 11 Kapitel / 17 Tabellen / 4 Abbildungen / 16-seitiges PDF, Lücken inline markiert und nach L1/L2/L3 bewertet, Top-3-Blocker auf dem Deckblatt, Phasen-Snapshots, Konsistenzprüfung md=docx=pdf. Das `vendor/venv` ist architekturspezifisch — auf anderer Plattform `bash install.sh` bzw. `install.ps1` ausführen.
+
+Plattformpakete in den Releases: macOS (Apple Silicon) mit venv, Windows (x64) ohne venv (einmal `install.ps1`). PDF braucht LibreOffice, md/docx nicht.
+
 ## Schnellstart
 
 ```bash
