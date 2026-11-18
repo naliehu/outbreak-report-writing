@@ -1,0 +1,53 @@
+{# ============================================================
+   单例病例流行病学调查报告模板
+   适用：输入性登革热、猴痘、发热伴、钩体病、霍乱单例、出血热等
+   骨架对齐语料：病例基本情况／发病就诊经过／流行病学史／接触者／实验室／来源研判／措施／下一步
+   ============================================================ #}
+# 关于{{ v.event.place_short or '〔地区〕' }}一例{{ v.profile.name or v.event.disease or '〔病种〕' }}{% if v.event.imported %}输入性{% endif %}病例（{{ v.event.case_name or '〔姓名〕' }}）的流行病学调查报告
+
+{{ v.now_case_intro }}
+
+## 一、病例基本情况
+{{ v.event.case_basic or ph('case.basic','病例姓名、性别、年龄、职业、身份证/护照号后四位、现住址、联系电话、户籍地、工作（就读）单位','P0') }}
+
+## 二、发病及就诊经过
+{{ v.event.case_clinical_course or ph('case.course','发病日期与首发症状、就诊机构与日期、诊断日期与诊断类型、住院与隔离情况、当前病情与转归','P0') }}
+
+{% if v.timeline_marks %}
+{{ v.fig_timeline }}
+{% endif %}
+
+## 三、流行病学史
+{{ v.event.case_exposure or ph('case.exposure','发病前最长潜伏期内旅居史（国家/省市/日期/航班车次）、接触史、职业暴露、饮食饮水与蚊虫叮咬史','P0') }}
+
+{% if v.profile.key_exposures %}
+**重点核查的暴露环节**：{{ v.profile.key_exposures|join('；') }}。
+{% endif %}
+
+## 四、接触者调查和管理
+{{ v.contacts_text }}
+
+## 五、实验室检测
+{{ v.lab_text }}
+
+
+{% if v.fig_geo %}{{ v.fig_geo }}{% endif %}
+
+## 六、感染来源研判
+{{ v.judgement_text }}
+
+## 七、已采取的措施
+{% for m in v.measures %}
+{{ loop.index }}. {{ m }}
+{% else %}
+{{ ph('measures','已落实的处置措施（隔离救治、密接管理、疫点消毒、应急监测、健康宣教、部门联动）','P0') }}
+{% endfor %}
+
+## 八、下一步工作
+{{ v.next_steps }}
+
+---
+{% include '_missing_appendix.md.j2' %}
+
+> 报告单位：{{ v.reporting.unit or ph('reporting.unit','报告单位','P1') }}　报告人：{{ v.reporting.reporter or ph('reporting.reporter','报告人','P1') }}　审核人：{{ v.reporting.reviewer or ph('reporting.reviewer','审核人','P1') }}
+> 联系电话：{{ v.reporting.phone or ph('reporting.phone','联系电话','P1') }}　报告时间：{{ v.now_datetime }}

@@ -1,0 +1,46 @@
+{
+  "name": "outbreak-report-writing",
+  "version": "1.0.0",
+  "description": "传染病现场流行病学调查报告（流调报告）生成技能 + DeepSeek Harness 插件：有限信息可出稿，缺项按 P0/P1/P2 分级，自动配流行曲线/传播链/地理分布，直出 Word、PDF、Markdown。",
+  "type": "module",
+  "main": "index.js",
+  "exports": {
+    ".": "./index.js",
+    "./cordis.patch.yml": "./cordis.patch.yml",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "index.js",
+    "cordis.patch.yml",
+    "SKILL.md",
+    "README.md",
+    "LICENSE",
+    "references",
+    "templates",
+    "scripts",
+    "tests",
+    "examples"
+  ],
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "manifestVersion": 1
+  },
+  "peerDependencies": {
+    "@deepseek-ai/dsh-tools": "^0.2.2-rc.1"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "keywords": [
+    "dsh-plugin",
+    "deepseek-harness",
+    "cordis",
+    "epidemiology",
+    "outbreak-investigation",
+    "public-health",
+    "china-cdc"
+  ],
+  "license": "MIT"
+}

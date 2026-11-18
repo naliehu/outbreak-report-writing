@@ -1,0 +1,14 @@
+# outbreak-report-writing —— DSH 插件（bundle patch）
+#
+# 安装：dsh plugin --profile web add github:naliehu/outbreak-report-writing
+# 该命令把本包加入 profile 的依赖，读到 package.json 的 dsh.bundle.patch 后
+# 自动把下面这一行挂进插件树，无需手工编辑 profile 配置。
+#
+# config 全部可省略：
+#   skillDir  显式指定技能目录（默认依次找 ~/.hermes/skills/outbreak-report-writing 与本包目录）
+#   python    显式指定解释器（默认优先用 vendor/venv/bin/python，其次 python3）
+#   outDir    默认输出目录（默认 <事件文件所在目录>/流调输出）
+- insert:
+    - id: epi-report
+      name: 'outbreak-report-writing'
+      config: {}

@@ -1,0 +1,43 @@
+# ============================================================
+# 示例 2：无锡市梁溪区某实验学校水痘暴发疫情（2016 年真实事件）
+# 特点：**只用一份大疫情网导出的个案 CSV + 少量事件字段**，演示数据驱动的自动出图
+# 用法：build_report.py --event event.yaml --stage initial --out ../输出-刘潭
+# ============================================================
+
+stage: initial
+line_list: ./个案-已脱敏.csv
+
+event:
+  name: 无锡市梁溪区某实验学校一起水痘暴发疫情
+  disease: 水痘
+  level: 未分级
+  setting: 学校
+  place:
+    city: 无锡市
+    district: 梁溪区
+    town: 某街道
+  institution:
+    name: 某实验学校
+    address: 梁溪区某路
+    classes: 48
+    students: 1900
+    staff: 145
+    facility: 学校设9个年级48个班级，教职员工145名，学生1900余名，多数为本地籍学生；校医由会计兼任，学校卫生状况良好，通风情况较好。
+
+  dates:
+    first_onset: 2016-04-17
+    report_org: 2016-06-03 11:07
+  report_channel: 2016年6月3日11时07分，某实验学校保健老师报告全校一周内发生12例水痘病例。接报后，区疾控中心立即组织疫情处置人员到该校进行疫情核实与处置。经核实，截至6月3日11时10分，全校一周内共有12例水痘病例，结合流行病学现场调查、临床症状及医疗机构诊断，初步判断该起疫情为一起水痘暴发疫情
+
+  counts:
+    cases: 28
+    clinical: 28
+    exposed: 2045
+
+  # 以下字段故意留空，用于演示〔待补〕标记与附录 A 分级：
+  # case_def / exposure / measures / lab / first_case_text / economic
+
+  reporting:
+    unit: 无锡市梁溪区疾病预防控制中心
+    reporter: 待填
+  report_date: 2016-06-03

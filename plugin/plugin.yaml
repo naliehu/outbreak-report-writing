@@ -1,0 +1,5 @@
+name: epi-report
+version: 1.0.0
+description: 传染病流调报告生成——有限信息输入，缺项分级，自动配图，直出 Word/PDF/Markdown
+provides_tools:
+  - epi_report

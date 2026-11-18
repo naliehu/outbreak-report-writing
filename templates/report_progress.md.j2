@@ -1,0 +1,51 @@
+{# ============================================================
+   进程报告模板（第 N 期）
+   适用：初次报告之后、结案之前的每一次进展上报；篇幅短，重在"变化"
+   ============================================================ #}
+# 关于{{ v.institution.name or v.event.place_short or '〔地区〕' }}一起{{ v.profile.name or v.event.disease or '〔病种〕' }}暴发疫情的进程报告（{{ v.event.progress_no or '〔期次〕' }}）
+
+{{ v.now_progress_intro }}
+
+## 一、疫情进展
+
+截至{{ v.now_date }}，累计报告病例{{ v.counts.cases or ph('counts.cases','累计病例数','P0') }}例{% if v.delta is defined %}（较上期新增{{ v.delta }}例）{% endif %}{% if v.counts.clinical %}，其中临床诊断{{ v.counts.clinical }}例、实验室确诊{{ v.counts.confirmed or 0 }}例{% endif %}；罹患率{{ v.rate_text }}。{% if v.counts.new_today is defined %}当日新增{{ v.counts.new_today }}例{% endif %}{% if v.counts.recovered is defined %}，累计痊愈{{ v.counts.recovered }}例{% endif %}{% if v.counts.current %}，现管理在治/隔离{{ v.counts.current }}例{% endif %}。
+
+{% if v.stats.epicurve.bins %}
+{{ v.fig_epicurve }}
+{% endif %}
+
+## 二、病例发病及转归情况
+
+{% if v.stats.group %}
+{{ v.table_group }}
+{% else %}
+{{ ph('group_denoms','新增病例的班级/单元分布','P1') }}
+{% endif %}
+
+所有病例中，{{ v.outcome_text }}
+
+
+{% if v.fig_group %}{{ v.fig_group }}{% endif %}
+
+## 三、密切接触者医学观察
+
+{{ v.contacts_text }}
+
+## 四、预防控制措施落实情况
+{% for m in v.measures %}
+{{ loop.index }}. {{ m }}
+{% else %}
+{{ ph('measures','上期提出措施的最新落实情况（逐条对应，写明数据：消毒面积、接种人数、缺勤追踪情况等）','P0') }}
+{% endfor %}
+
+## 五、存在的问题与风险研判
+
+{{ v.risk_text }}
+
+## 六、下一步工作建议
+{{ v.next_steps }}
+
+---
+{% include '_missing_appendix.md.j2' %}
+
+> 报告单位：{{ v.reporting.unit or ph('reporting.unit','报告单位','P1') }}　报告人：{{ v.reporting.reporter or ph('reporting.reporter','报告人','P1') }}　报告时间：{{ v.now_datetime }}

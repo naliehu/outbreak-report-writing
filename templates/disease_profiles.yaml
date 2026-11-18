@@ -1,0 +1,218 @@
+# 病种档案（可扩展数据层）
+# 说明：infected 潜伏期单位为"天"，除非特别标注。
+# verify: true 表示该数值未能从本地语料/现行指南直接核实，使用前必须核对当期规范。
+# source: corpus=本地语料原文；guide=国家/行业指南；check=待核对
+
+defaults:
+  latent_common_days: null        # 常见潜伏期
+  latent_max_days: null           # 最长潜伏期（结案判定用）
+  isolation_rule: ""              # 解除隔离标准
+  closure_rule: ""                # 结案判定文字
+  case_def: ""                    # 病例定义骨架
+  key_exposures: []               # 必问暴露史
+  required_figures: ["epicurve"]  # 最小图集
+  optional_figures: []
+  setting_default: ""             # 常见发生场所
+
+diseases:
+
+  水痘:
+    aliases: [varicella, 水痘-带状疱疹病毒, VZV]
+    category: 丙类
+    latent_common_days: 14
+    latent_max_days: 21
+    isolation_rule: "隔离至疱疹全部干燥结痂，且不少于发病后14天，持社区卫生服务中心复课/复工证明返校"
+    closure_rule: "最后一例病例有效隔离后经过1个最长潜伏期（21天）无新发病例"
+    case_def: "临床诊断病例：<机构>学生及教职员工中皮肤斑疹、丘疹、透明疱疹并有出疹部位瘙痒者，伴或不伴发热；或临床表现不典型但发病前21天内有水痘/带状疱疹病例密切接触史"
+    key_exposures: ["同班/同宿舍/同餐桌接触", "校外培训机构同班", "家庭成员或亲友水痘/带状疱疹", "疫苗接种史（2剂次？接种时间）"]
+    required_figures: [epicurve, group_bar, age_sex]
+    optional_figures: [transmission_chain, generation, school_map, vax_curve, dorm_floor]
+    setting_default: 学校/托幼机构
+    outbreak_threshold: "1周内同一集体单位≥10例（或出现重症/死亡）"
+    source: corpus
+
+  手足口病:
+    aliases: [HFMD, 疱疹性咽峡炎]
+    category: 丙类
+    latent_common_days: 4
+    latent_max_days: 10
+    isolation_rule: "隔离至症状完全消失后1周，且不少于发病后14天；病例餐具、玩具单独消毒"
+    closure_rule: "最后1例病例发病（隔离）后经过1个最长潜伏期（10天）无新发病例"
+    case_def: "疑似病例：<起止>以来，<机构>儿童中出现手、足、口、臀等部位皮疹或口腔疱疹/溃疡者。临床诊断病例：疑似病例经医疗机构诊断为手足口病或疱疹性咽峡炎者"
+    key_exposures: ["同班/同寝室接触", "共同玩具、毛巾、餐具", "家庭成员（尤其手足）病例", "校外游乐场/早教机构", "EV71疫苗接种史"]
+    required_figures: [epicurve, group_bar, age_sex]
+    optional_figures: [transmission_chain, generation, school_map, symptom_bar]
+    setting_default: 托幼机构
+    outbreak_threshold: "1周内同一集体单位≥10例，或≥2例重症/死亡"
+    source: corpus
+
+  诺如病毒感染性腹泻:
+    aliases: [诺如, norovirus, 病毒性胃肠炎, 急性胃肠炎]
+    category: 丙类（其它感染性腹泻病）
+    latent_common_days: 1.5
+    latent_max_days: 3
+    isolation_rule: "症状消失后72小时方可复课/复工；病例呕吐物、粪便按疫点消毒规范处置"
+    closure_rule: "最后1例病例发病并隔离后经过2个最长潜伏期（6天）无新发病例"
+    case_def: "疑似病例：<起止>起，<机构>学生及教职工24小时内排便≥3次且大便性状改变（稀便、水样便等）和/或24小时内呕吐≥2次者。确诊病例：疑似病例粪便、肛拭子或呕吐物诺如病毒核酸检测阳性"
+    key_exposures: ["共同就餐/点心", "直饮水与二次供水", "呕吐物处置与同室暴露", "食堂从业人员健康状况", "近14天校外聚餐"]
+    required_figures: [epicurve, group_bar]
+    optional_figures: [transmission_chain, generation, school_map, floor_map, env_sampling]
+    setting_default: 学校/托幼/集体单位
+    outbreak_threshold: "7天内同一集体单位≥20例有流行病学关联的病毒性胃肠炎病例（其中≥2例确诊）"
+    source: corpus
+
+  流行性感冒:
+    aliases: [流感, influenza, 流感样病例]
+    category: 丙类
+    latent_common_days: 2
+    latent_max_days: 7
+    isolation_rule: "体温恢复正常、症状消失后48小时复课/复工"
+    closure_rule: "最后1例病例隔离后经过1个最长潜伏期（7天）无新发病例"
+    case_def: "流感样病例：发热（腋温≥38℃），伴咳嗽或咽痛之一者。临床诊断病例：流感样病例有流行病学证据且排除其他引起流感样症状的疾病"
+    key_exposures: ["同班/同宿舍", "集体活动与集会", "家庭成员流感样病例", "本年度流感疫苗接种史"]
+    required_figures: [epicurve, group_bar, age_sex]
+    optional_figures: [transmission_chain, generation, school_map, ili_surveillance]
+    setting_default: 学校/托幼
+    outbreak_threshold: "1周内同一集体单位≥10例流感样病例"
+    source: corpus
+
+  霍乱:
+    aliases: [O139, O1, 二号病, 甲类]
+    category: 甲类
+    latent_common_days: 2
+    latent_max_days: 5
+    isolation_rule: "症状完全消失、连续2次（间隔≥24h）肛拭子/粪便核酸检测阴性，方可解除隔离"
+    closure_rule: "病例治愈并解除隔离，密切接触者医学观察5天（最长潜伏期）无二代病例，传播危险因素已清除"
+    case_def: "疑似病例：腹泻（水样便、米泔水样便为主），伴或不伴呕吐，有流行病学史。确诊病例：粪便/肛拭子/呕吐物培养或核酸检测霍乱弧菌阳性（O1/O139群，并检测CTX）"
+    key_exposures: ["饮用水源（自来水管网、井水、二次供水）", "生食/半生食水产品", "流动摊贩与夜市", "聚餐与餐饮加工环节", "病例发病前5天活动轨迹（精确到小时）"]
+    required_figures: [timeline, contact_table, env_sampling]
+    optional_figures: [epicurve, geo_point, transmission_chain]
+    setting_default: 社区/村组/餐饮场所
+    outbreak_threshold: "发现1例即按甲类管理，2小时内网络直报"
+    source: corpus
+
+  伤寒副伤寒:
+    aliases: [伤寒, typhoid, 沙门菌, 副伤寒]
+    category: 乙类
+    latent_common_days: 10
+    latent_max_days: 42
+    verify: true
+    isolation_rule: "症状消失、连续2次（间隔≥24h）粪便/尿培养阴性方可解除；食品从业人员需连续3次阴性"
+    closure_rule: "最后1例病例发病后经过1个最长潜伏期无新发病例，所有病例均康复并符合解除隔离标准，污染场所完成终末消毒"
+    case_def: "疑似病例：不明原因持续或反复发热≥3天、体温≥38℃，伴头痛、乏力、腹部不适，实验室结果未明确者。确诊病例：血/骨髓/粪便培养出伤寒或副伤寒沙门菌"
+    key_exposures: ["饮用水源（井水、河塘水、自来水）", "熟食/凉拌菜/生吃蔬菜", "菜场固定与流动摊位", "夜市与大排档", "粪便污水处理与旱厕外溢", "食品从业人员带菌筛查"]
+    required_figures: [epicurve, geo_point, case_control, lab_pfge]
+    optional_figures: [transmission_chain, generation, age_sex, occupation_bar]
+    setting_default: 社区/村镇（水源性与食源性并存）
+    outbreak_threshold: "同一地区病例数显著超过历年同期水平或出现聚集"
+    source: corpus
+
+  登革热:
+    aliases: [dengue, 输入性登革热]
+    category: 乙类
+    latent_common_days: 6
+    latent_max_days: 14
+    verify: true
+    isolation_rule: "防蚊隔离至发病后5天（病毒血症期结束）；病房/居家纱门纱窗加防蚊"
+    closure_rule: "最后1例病例防蚊隔离后经过1个最长潜伏期（14天）无新发病例"
+    case_def: "疑似病例：发病前14天内有登革热流行区旅居史，或居住地有登革热病例，出现发热伴皮疹、头痛、肌肉关节痛、乏力之一者。确诊病例：NS1抗原/IgM或核酸检测阳性"
+    key_exposures: ["发病前14天境外/省外旅居史（国家、城市、日期）", "航班号与同行人员", "居住地及工作地蚊媒密度（布雷图指数）", "近1个月内本地蚊虫叮咬史", "同行/同住人员健康状况"]
+    required_figures: [epicurve, geo_point, timeline]
+    optional_figures: [mosquito_index, transmission_chain, age_sex]
+    setting_default: 社区（输入继发本地传播）
+    outbreak_threshold: "出现本地感染病例或聚集性疫情"
+    source: corpus+guide
+
+  猴痘:
+    aliases: [mpox, 猴痘病毒]
+    category: 乙类
+    latent_common_days: 9
+    latent_max_days: 21
+    isolation_rule: "隔离至皮疹完全结痂脱落、痂皮自然脱落，且不少于发病后21天"
+    closure_rule: "最后1例病例诊断并隔离后经过1个最长潜伏期（21天）无新发病例"
+    case_def: "疑似病例：发热、淋巴结肿大伴皮疹（斑疹→丘疹→水疱→脓疱→结痂），发病前21天内有猴痘病例接触史或疫区旅居史。确诊病例：皮疹/疱液/咽拭子核酸检测猴痘病毒阳性"
+    key_exposures: ["发病前21天性接触史（含临时性伴、交友软件约见）", "皮疹患者的皮肤/体液直接接触", "境外或外省旅居史（含城市、日期）", "同住/同室人员", "医疗机构就诊环节暴露"]
+    required_figures: [transmission_chain, timeline, contact_table]
+    optional_figures: [epicurve, generation, geo_point]
+    setting_default: 社区（性传播为主）
+    outbreak_threshold: "发现1例即报告；出现≥2例关联病例按聚集性处置"
+    source: corpus
+
+  发热伴血小板减少综合征:
+    aliases: [SFTS, 新型布尼亚病毒, 蜱咬]
+    category: 乙类
+    latent_common_days: 9
+    latent_max_days: 14
+    verify: true
+    isolation_rule: "隔离至症状消失；血液、分泌物接触者做好个人防护"
+    closure_rule: "最后1例病例隔离后经过1个最长潜伏期无新发病例，密切接触者医学观察期满无异常"
+    case_def: "疑似病例：有蜱叮咬史或野外活动史，发热（≥38℃）伴乏力、纳差、恶心呕吐、肌肉酸痛，血常规示白细胞和/或血小板减少。确诊病例：SFTS病毒核酸检测阳性"
+    key_exposures: ["发病前2周蜱叮咬史（部位、时间）", "田间/林区/茶园作业与野外活动", "接触病死动物（犬、羊）", "接触同类病例血液/体液", "家庭成员共同暴露"]
+    required_figures: [timeline, epicurve, geo_point]
+    optional_figures: [transmission_chain, lab_curve, tick_map]
+    setting_default: 农村/丘陵地区
+    outbreak_threshold: "同一自然村/家庭出现≥2例或人传人聚集"
+    source: corpus
+
+  食源性疾病:
+    aliases: [食物中毒, 副溶血性弧菌, 沙门菌食源]
+    category: 突发公共卫生事件
+    latent_common_days: 0.5
+    latent_max_days: 1.5
+    verify: true
+    isolation_rule: "症状消失后可正常工作；食品加工人员需持阴性检测结果复岗"
+    closure_rule: "末例病例发病后经过最长潜伏期无新发病例，相关食品及加工环节样品检验合格"
+    case_def: "疑似病例：同一餐次/同一场所进食后出现呕吐、腹泻（≥3次/日）、腹痛、发热之一者。确诊病例：病例标本或可疑食品中检出同一病原"
+    key_exposures: ["共同餐次与菜单（逐菜）", "进食时间与发病时间差（潜伏期推算）", "加工环节（生熟分开、储存温度、时间）", "从业人员手部与肠道带菌", "同餐未发病者对照"]
+    required_figures: [latent_hist, epicurve, food_attack_table]
+    optional_figures: [case_control, geo_point, timeline]
+    setting_default: 餐饮单位/集体食堂/宴席
+    outbreak_threshold: "同一餐次≥2例相似症状，或≥1例重症/死亡"
+    source: corpus
+
+  新型冠状病毒感染:
+    aliases: [新冠, COVID-19, SARS-CoV-2]
+    category: 乙类（乙类乙管）
+    latent_common_days: 4
+    latent_max_days: 8
+    isolation_rule: "按当期防控方案执行"
+    closure_rule: "最后1例病例隔离后经过1个最长潜伏期无新发病例"
+    case_def: "确诊病例：核酸检测或抗原检测阳性，伴或不伴临床症状"
+    key_exposures: ["同住/同餐/同室", "密闭空间与集体活动", "境外或外省旅居史", "疫苗接种史"]
+    required_figures: [epicurve, transmission_chain, generation]
+    optional_figures: [geo_point, age_sex, contact_table]
+    setting_default: 家庭/集体单位
+    outbreak_threshold: "按当期防控方案判定"
+    source: corpus
+
+  基孔肯雅热:
+    aliases: [chikungunya, 基孔]
+    category: 乙类
+    latent_common_days: 5
+    latent_max_days: 12
+    verify: true
+    isolation_rule: "防蚊隔离至发病后5天"
+    closure_rule: "最后1例病例防蚊隔离后经过1个最长潜伏期无新发病例，蚊媒密度降至安全阈值以下"
+    case_def: "疑似病例：发病前12天内有疫区旅居史或本地病例接触史，突发发热伴多关节痛/关节炎、皮疹。确诊病例：核酸检测阳性"
+    key_exposures: ["疫区旅居史（国家/城市/日期）", "蚊虫叮咬史", "居住地蚊媒密度", "同行人员健康状况"]
+    required_figures: [epicurve, geo_point, timeline]
+    optional_figures: [mosquito_index, transmission_chain]
+    setting_default: 社区
+    outbreak_threshold: "出现本地感染病例"
+    source: guide
+
+  其他感染性腹泻:
+    aliases: [感染性腹泻, 其它感染性腹泻病, 轮状病毒]
+    category: 丙类
+    latent_common_days: 2
+    latent_max_days: 7
+    verify: true
+    isolation_rule: "症状消失后48-72小时复课"
+    closure_rule: "最后1例病例隔离后经过1个最长潜伏期无新发病例"
+    case_def: "疑似病例：24小时内排便≥3次且性状改变，伴或不伴呕吐、发热、腹痛"
+    key_exposures: ["共同就餐与饮水", "食堂从业人员", "手卫生与共用餐具", "校外餐饮"]
+    required_figures: [epicurve, group_bar]
+    optional_figures: [transmission_chain, floor_map, age_sex]
+    setting_default: 学校/托幼/集体单位
+    outbreak_threshold: "7天内同一集体单位≥20例"
+    source: corpus

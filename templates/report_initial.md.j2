@@ -1,0 +1,100 @@
+{# ============================================================
+   初次调查报告模板（暴发/聚集性疫情）
+   适用：学校、托幼机构、集体单位 2 例以上聚集，或已达突发标准
+   渲染约定：
+     {{ ph('字段','说明','P0') }}  → 输出〔待补N〕并在附录 A 登记
+     {{ v.dates.first_onset|d }}   → 有值输出格式化日期，无值自动降级为待补
+   ============================================================ #}
+# 关于{{ v.event.place_short or '〔地区〕' }}{{ v.event.institution.name or '' }}一起{{ v.profile.name or v.event.disease or '〔病种〕' }}暴发疫情的初步调查报告
+
+{{ v.now_report_intro }}
+
+## 一、基本情况
+
+{% if v.institution.name %}
+{{ v.institution.name }}，位于{{ v.institution.address or ph('institution.address','机构详细地址','P1') }}，共有班级{{ v.institution.classes or ph('institution.classes','班级数','P1') }}个，{{ v.institution.students or ph('institution.students','学生总数','P1') }}名学生，教职员工{{ v.institution.staff or ph('institution.staff','教职员工数','P1') }}名{% if v.institution.male %}（男生{{ v.institution.male }}名、女生{{ v.institution.female }}名）{% endif %}。{{ v.institution.facility or '' }}
+{% else %}
+{{ ph('institution.name','发生机构名称、地址、班级与学生/员工总数','P1') }}
+{% endif %}
+
+## 二、疫情概况
+
+### （一）病例定义
+{{ v.event.case_def or v.profile.case_def or ph('case_def','病例定义（疑似/临床诊断/确诊病例）','P0') }}
+
+### （二）病例搜索
+{{ v.event.case_search or ('通过查阅' ~ (v.institution.name or '该机构') ~ '晨午检与因病缺勤登记、访谈校医及班级教师、查阅辖区医疗机构门诊与住院记录、检索中国疾病预防控制信息系统网络直报病例等方式开展病例搜索。') }}
+
+### （三）发病概况
+截至{{ v.now_date }}，共报告{{ v.profile.name or v.event.disease or '该病' }}病例{{ v.counts.cases or ph('counts.cases','累计病例数','P0') }}例{% if v.counts.clinical %}（临床诊断{{ v.counts.clinical }}例、实验室确诊{{ v.counts.confirmed or 0 }}例）{% endif %}，罹患率{{ v.rate_text }}{% if v.counts.hospital %}，住院{{ v.counts.hospital }}例{% endif %}{% if v.counts.severe %}，重症{{ v.counts.severe }}例{% endif %}。
+{% if v.stats.symptoms %}
+病例主要症状为{{ v.stats.symptoms[:4]|map(attribute=0)|join('、') }}，具体构成见表 1。
+
+{{ v.table_symptoms }}
+{% else %}
+{{ ph('symptoms','病例症状构成（各症状例数与占比）','P1') }}
+{% endif %}
+
+
+{% if v.fig_symptom %}{{ v.fig_symptom }}{% endif %}
+
+## 三、流行病学调查
+
+### （一）首发病例
+{{ v.event.first_case_text or ph('first_case.detail','首例病例姓名、性别、年龄、班级、住址、发病与就诊经过、疫苗接种史','P1') }}
+
+### （二）时间分布
+{{ v.time_text }}
+
+{% if v.fig_epicurve %}{{ v.fig_epicurve }}{% endif %}
+
+### （三）班级（单位）分布
+{% if v.stats.group %}
+{{ v.group_text }}
+
+{{ v.table_group }}
+{% else %}
+{{ ph('group_denoms','各班/各单元人数与病例数（分层罹患率分母）','P1') }}
+{% endif %}
+
+
+{% if v.fig_group %}{{ v.fig_group }}{% endif %}
+
+### （四）人群分布
+{% if v.stats.n %}
+{{ v.stats.n }}例病例中，男性{{ v.stats.male }}例、女性{{ v.stats.female }}例，男女性别比{{ v.stats.sex_ratio or '—' }}{% if v.stats.age_sex %}；年龄以{{ v.age_mode_band }}岁组为主{% endif %}。
+{% else %}
+{{ ph('cases.sex','病例性别、年龄构成','P1') }}
+{% endif %}
+
+
+{% if v.fig_generation %}{{ v.fig_generation }}{% endif %}
+
+{% if v.fig_chain %}{{ v.fig_chain }}{% endif %}
+
+### （五）流行病学史
+{{ v.event.exposure or ph('exposure','病例发病前最长潜伏期内的接触史、共同暴露因素（同班/同宿舍/共同就餐/共同水源等）','P1') }}
+
+## 四、实验室检测
+{{ v.lab_text }}
+
+## 五、调查判断
+
+结合流行病学分布特征、临床表现及实验室检测结果，综合判断本次疫情为一起{{ v.conclusion_nature }}{% if v.event.level %}，达到突发公共卫生事件{{ v.event.level }}报告标准，已于{{ v.dates.web_report|d }}在网络直报系统报告{% endif %}。
+风险研判：{{ v.risk_text }}
+
+## 六、已采取的预防控制措施
+{% for m in v.measures %}
+{{ loop.index }}. {{ m }}
+{% else %}
+{{ ph('measures','已落实的预防控制措施（传染源管理、切断传播途径、保护易感者、健康宣教、督导）','P0') }}
+{% endfor %}
+
+## 七、下一步工作
+{{ v.next_steps }}
+
+---
+{% include '_missing_appendix.md.j2' %}
+
+> 报告单位：{{ v.reporting.unit or ph('reporting.unit','报告单位','P1') }}　报告人：{{ v.reporting.reporter or ph('reporting.reporter','报告人','P1') }}　审核人：{{ v.reporting.reviewer or ph('reporting.reviewer','审核人','P1') }}
+> 联系电话：{{ v.reporting.phone or ph('reporting.phone','联系电话','P1') }}　报告时间：{{ v.now_datetime }}

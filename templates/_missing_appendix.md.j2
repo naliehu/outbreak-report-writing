@@ -1,0 +1,24 @@
+{# 共享片段：待补充信息附录（按紧要程度排序，置于正文之后，不干扰阅读） #}
+
+## 附录 A　待补充信息清单
+
+{% if v.missing_list %}
+> 本报告当前完成度 **{{ v.completeness.score }}%**（{{ v.completeness.level }}）。正文中以〔待补N〕标记的位置，对应该清单编号。按 **P0 → P1 → P2** 顺序补齐；同一等级内按权重降序，即越靠前越影响结论成立。
+
+| 编号 | 等级 | 待补充内容 | 建议时限 |
+|---|---|---|---|
+{% for m in v.missing_list -%}
+| {{ m.mark }} | {{ m.grade }} | {{ m.desc }} | {{ m.due }} |
+{% endfor %}
+
+**等级含义**
+- **P0（阻断性）**：不补齐则疫情性质判定、事件分级、网络直报或结案不成立，存在被上级退回或问责风险。
+- **P1（结构性）**：不影响结论，但章节缺内容，影响报告完整性与评审印象。
+- **P2（精细化）**：提升可信度与说服力，可在结案前一并完善。
+{% else %}
+> 本报告所需字段已齐备（完成度 {{ v.completeness.score }}%），无待补充项。
+{% endif %}
+
+{% if v.completeness.by_grade %}
+**分级统计**：P0 {{ v.completeness.by_grade.get('P0', 0) }} 项、P1 {{ v.completeness.by_grade.get('P1', 0) }} 项、P2 {{ v.completeness.by_grade.get('P2', 0) }} 项。
+{% endif %}
