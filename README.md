@@ -1,5 +1,7 @@
 # 传染病流调报告撰写技能（outbreak-report-writing）
 
+[English](README.en.md) · **简体中文** · [繁體中文（台灣）](README.zh-TW.md) · [Deutsch](README.de.md) · [日本語](README.ja.md)
+
 能将**仅有的**不完整**的现场信息，变成一份当下就能上报的流调报告：正文按疾控体例写，
 暂缺的，未获得的流调信息部分会按照紧迫程度在报告最后罗列，相关流行病可视化配图按病种自动配齐，Word／PDF／Markdown 随时导出，会生成原版和脱敏版。
 
