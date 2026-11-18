@@ -25,10 +25,20 @@
     "bundle": {
       "patch": "./cordis.patch.yml"
     },
-    "manifestVersion": 1
-  },
-  "peerDependencies": {
-    "@deepseek-ai/dsh-tools": "^0.2.2-rc.1"
+    "manifestVersion": 1,
+    "compatibility": {
+      "node": ">=20",
+      "dsh": ">=0.2.2-rc.1"
+    },
+    "permissions": {
+      "summary": "在本地读写文件：读取事件 YAML/JSON 与个案 CSV，调用 python3 生成报告，写入指定输出目录。不联网、不上传任何数据。",
+      "fs": [
+        "read",
+        "write"
+      ],
+      "network": false,
+      "shell": "python3 (vendor/venv 或系统解释器)"
+    }
   },
   "engines": {
     "node": ">=20"
@@ -42,5 +52,8 @@
     "public-health",
     "china-cdc"
   ],
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "@deepseek-ai/dsh-tools": "0.2.2-rc.1"
+  }
 }
