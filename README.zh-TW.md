@@ -117,7 +117,7 @@ plugin/                   Hermes 外掛原始碼（封裝成 epi_report 工具�
 tests/                    單元測試
 ```
 
-## 推廣給同事
+## 推廣
 
 1. **整包複製**：把 `outbreak-report-writing/` 整個目錄（含 `vendor/venv`，約 150 MB）給同事，`python3 scripts/build_report.py` 就能跑，不必連網、不必 pip。
 2. **只要範本**：把 `templates/*.j2` + `references/06-文风与句式库.md` 複製走，手動填寫也是一份合規報告——技能的價值有一半在這個文件裡。

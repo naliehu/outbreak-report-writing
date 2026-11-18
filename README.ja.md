@@ -116,7 +116,7 @@ plugin/                   Hermesプラグインのソース（epi_report ツー�
 tests/                    単体テスト
 ```
 
-## 同僚への配布
+## 配布
 
 1. **丸ごとコピー**：`outbreak-report-writing/` ディレクトリ全体（`vendor/venv` 込み、約150 MB）を渡せば、`python3 scripts/build_report.py` がそのまま動きます。ネットワークもpipも不要。
 2. **テンプレートだけ**：`templates/*.j2` と `references/06-文风与句式库.md` を持っていき手で埋めても、規範に沿った報告書になります。このスキルの価値の半分はこの文書にあります。

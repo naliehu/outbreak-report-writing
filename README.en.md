@@ -117,7 +117,7 @@ plugin/                   Hermes plugin source (exposed as the epi_report tool)
 tests/                    unit tests
 ```
 
-## Handing it to colleagues
+## Promotion
 
 1. **Copy the whole thing**: the `outbreak-report-writing/` directory (including `vendor/venv`, ~150 MB) — `python3 scripts/build_report.py` just runs, no network, no pip.
 2. **Templates only**: take `templates/*.j2` + `references/06-文风与句式库.md` and fill them in by hand; filling them manually still yields a compliant report — half the value of this skill sits in that document.

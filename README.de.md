@@ -117,7 +117,7 @@ plugin/                   Hermes-Plugin-Quellcode (als Werkzeug epi_report expon
 tests/                    Unit-Tests
 ```
 
-## An Kolleginnen und Kollegen weitergeben
+## Weitergabe
 
 1. **Alles kopieren**: das Verzeichnis `outbreak-report-writing/` (inklusive `vendor/venv`, ca. 150 MB) — `python3 scripts/build_report.py` läuft sofort, ohne Netz, ohne pip.
 2. **Nur die Vorlagen**: `templates/*.j2` + `references/06-文风与句式库.md` mitnehmen und von Hand füllen — auch manuell gefüllt ergibt das einen regelkonformen Bericht; die Hälfte des Werts steckt in diesem Dokument.
