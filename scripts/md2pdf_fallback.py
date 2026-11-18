@@ -233,7 +233,38 @@ def md_to_pdf(md_path, pdf_path=None, title: str | None = None) -> Path:
         writer.end_page()
         guard += 1
     writer.close()
+    _compress_pdf(pdf_path)
     return pdf_path
+
+
+def _compress_pdf(pdf_path) -> None:
+    """字体整包嵌入会让 4 页报告涨到 40 MB+；子集化后回到几百 KB。
+
+    Story 排版把整个 .ttf 塞进 PDF（Arial Unicode 约 23 MB），这里重开文档做字体子集化
+    并用杂项对象回收 + 流压缩重写一遍。失败（老版本 pymupdf 无 subset_fonts）就原样保留。
+    """
+    import pymupdf  # 与 md_to_pdf 一样按需导入，避免模块级硬依赖
+
+    try:
+        doc = pymupdf.open(str(pdf_path))
+        try:
+            if not hasattr(doc, "subset_fonts"):
+                doc.close()
+                return
+            doc.subset_fonts()
+            tmp = str(pdf_path) + ".tmp"
+            doc.save(tmp, garbage=4, deflate=True)
+        finally:
+            doc.close()
+        os.replace(tmp, str(pdf_path))
+    except Exception:
+        # 压缩是优化项，失败不影响出稿
+        for leftover in (str(pdf_path) + ".tmp",):
+            if os.path.exists(leftover):
+                try:
+                    os.remove(leftover)
+                except OSError:
+                    pass
 
 
 if __name__ == "__main__":

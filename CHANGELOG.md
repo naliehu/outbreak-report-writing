@@ -19,6 +19,7 @@
 - 现在有兜底：新增 `scripts/md2pdf_fallback.py`，用 PyMuPDF 的 Story 排版引擎（MuPDF 自带）直接把 markdown 排成 A4 PDF，只依赖 `pymupdf`。无 `soffice` 时自动启用，内容、图表、分页齐全；版式是独立一套（表格列宽、图片缩放由 CSS 决定），与 docx 版略有差别。
 - 有 LibreOffice 时行为不变：仍走 docx→pdf，版式与 Word 完全一致。
 - 中文字体从系统里挑可用单字体（macOS `Arial Unicode.ttf`、Windows `msyh.ttc`/`simsun.ttc`、Linux Noto/WQY）；`.ttc` 集合字体用 fontTools 拆出单字重再用。
+- 体积：Story 排版会把整个字体文件塞进 PDF（Arial Unicode 约 23 MB），4 页报告能到 42 MB。`md_to_pdf()` 末尾加了 `_compress_pdf()`，重开文档做字体子集化 + 流压缩，42 MB → 0.36 MB，页数、图数、汉字全部不变。老版本 pymupdf 没有 `subset_fonts` 时自动跳过。
 
 ### 修复
 
