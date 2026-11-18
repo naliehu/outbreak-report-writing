@@ -5,7 +5,7 @@
      {{ ph('字段','说明','P0') }}  → 输出〔待补N〕并在附录 A 登记
      {{ v.dates.first_onset|d }}   → 有值输出格式化日期，无值自动降级为待补
    ============================================================ #}
-# 关于{{ v.event.place_short or '〔地区〕' }}{{ v.event.institution.name or '' }}一起{{ v.profile.name or v.event.disease or '〔病种〕' }}暴发疫情的初步调查报告
+# 关于{{ v.event.place_short or '' }}{{ v.event.institution.name or '〔机构〕' }}一起{{ v.profile.name or v.event.disease or '〔病种〕' }}暴发疫情的初步调查报告
 
 {{ v.now_report_intro }}
 

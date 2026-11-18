@@ -27,7 +27,6 @@ vendor/flowfig/         四图：投影 + 渲染 + 几何门禁 + 缺口降级�
 vendor/report_export/   导出：AST → md/docx/pdf + 阶段快照（PDF 由同一份 docx 经 LibreOffice 转）
 scripts/flowreport.py   本 skill 的执行入口（下面所有命令都是它）
 templates/              最小可用报告骨架 + disease_profiles.yaml（12 病种档案）+ 五套 .j2 体裁模板
-examples/               三个可直接跑的示例（结案/初次/残缺输入）
 ```
 
 ## 两条路径，一套判据
@@ -97,7 +96,7 @@ $PY "$LITE" --event 事件.yaml --stage final \
 
 `--stage` 取 `initial`（初次）／`progress`（进程）／`final`（结案）／`closure`（结案申请单）／
 `case`（单例病例）。正文里缺的字段渲染成红色〔待补P0-2〕，附录 A 按 P0→P1→P2 排序并写明时限。
-三个现成示例在 `examples/`（结案汇总数据、初次真实个案 CSV、残缺输入验证不阻塞）。
+事件 YAML 与个案 CSV 由使用者自建，字段清单见 `references/intake-playbook.md`。
 
 改代码或改模板后，用**回归对账**验收：拿一份已定稿的历史报告，把它的数据录成 YAML，跑一遍，
 逐项比对分层罹患率、病例数、经济损失分项与原文是否一致。数字对得上才算流水线可用；
@@ -116,7 +115,7 @@ $PY "$LITE" --event 事件.yaml --stage final \
 
 脱敏做什么（`scripts/deident.py`）：
 
-- 人名 → 姓 + 某（张志强→张某）；同一人全文一致，同姓不同人自动加序号
+- 人名 → 姓 + 某（张一→张某）；同一人全文一致，同姓不同人自动加序号
 - 身份证、手机、固话、邮箱、出生日期 → `（略）`（年龄保留，出生日期去掉）
 - 门牌 → 保留到村/社区/路，`27号3幢2单元501室` 变 `（略）`
 - **保留**机构名、行政区、日期、病例数、罹患率——删了报告就没法定位

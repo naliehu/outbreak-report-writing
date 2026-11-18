@@ -18,8 +18,7 @@
     "references",
     "templates",
     "scripts",
-    "tests",
-    "examples"
+    "tests"
   ],
   "dsh": {
     "bundle": {

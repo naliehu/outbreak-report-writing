@@ -1,10 +1,10 @@
 {# ============================================================
    结案申请单模板（一页纸，报上级疾控）
-   语料实证：各区县上报无锡市疾控的结案申请单均为本结构
+   语料实证：各区县上报xx市疾控的结案申请单均为本结构
    ============================================================ #}
 # {{ v.reporting.unit or '〔区县〕疾病预防控制中心' }}突发公共卫生事件及相关信息结案申请单
 
-无锡市疾病预防控制中心：
+xx市疾病预防控制中心：
 
 我中心于{{ v.dates.web_report|d }}在“突发公共卫生事件管理信息系统”中进行网络直报的{{ v.event.name or ph('event.name','事件名称','P0') }}（事件级别：{{ v.event.level or ph('event.level','事件级别','P0') }}{% if v.counts.cases %}；发病人数：{{ v.counts.cases }}人{% endif %}），最后1例病例{{ v.dates.last_onset|d if v.dates.last_onset else ph('dates.last_onset','末例病例发病日期','P0') }}发病{% if v.dates.isolated_last %}，并于{{ v.dates.isolated_last|d }}隔离{% endif %}，现经过1个{{ v.profile.name or '该病' }}最长潜伏期（{{ v.profile.latent_max_days or '〔潜伏期〕' }}天）{% if v.dates.observed_end %}（至{{ v.dates.observed_end|d }}）{% endif %}，未再出现新发病例{% if v.contacts.observed_result %}，密切接触者医学观察期满无异常{% endif %}。经中心相关人员审核，此事件/相关信息已达结案标准，现申请结案。
 

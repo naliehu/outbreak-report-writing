@@ -24,16 +24,16 @@ cd ~/.hermes/skills/outbreak-report-writing
 PY="env -u PYTHONPATH -u VIRTUAL_ENV vendor/venv/bin/python"
 
 # Five fields are enough to produce a draft
-$PY scripts/build_report.py --event examples/03-残缺输入/event.yaml \
+$PY scripts/build_report.py --event 事件.yaml \
     --stage initial --out ./我的输出 --formats md,docx,pdf
 
 # Driven by a real case CSV (four figures generated automatically)
-$PY scripts/build_report.py --event examples/02-某实验学校水痘-真实个案/event.yaml \
-    --stage initial --line-list examples/02-某实验学校水痘-真实个案/个案-已脱敏.csv \
+$PY scripts/build_report.py --event 事件.yaml \
+    --stage initial --line-list 个案.csv \
     --out ./我的输出 --formats md,docx,pdf
 ```
 
-The example paths are the original Chinese directory names — copy them verbatim.
+The event YAML and the case CSV are files you provide yourself; the field list is in `references/intake-playbook.md`.
 
 `--stage`: `initial` first report / `progress` progress report / `final` final report / `closure` closure application / `case` single case.
 
@@ -43,7 +43,7 @@ By default you get two files; the one ending in `-脱敏` (de-identified) is saf
 
 | Item | Raw version (internal) | De-identified version (external) |
 |---|---|---|
-| Name | 冀斌 | 冀某 (numbered automatically when two people share a surname) |
+| Name | 张一 | 张某 (numbered automatically when two people share a surname) |
 | ID number / mobile / landline / e-mail | as-is | （略）(omitted) |
 | Date of birth | 1995年7月30日 | （略）, age retained |
 | Address | Dieburger Str. 78 Darmstadt, 64287 | （略） |
@@ -115,7 +115,6 @@ templates/                five .j2 genre templates + disease_profiles.yaml (add 
 scripts/                  epi_core / epi_viz / build_report / md2docx / flowreport
 plugin/                   Hermes plugin source (exposed as the epi_report tool)
 tests/                    unit tests
-examples/                 three runnable examples with generated output
 ```
 
 ## Handing it to colleagues

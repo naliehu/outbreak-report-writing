@@ -39,7 +39,7 @@ TEL_PAT = re.compile(r"(?<!\d)0\d{2,3}[-\s]?\d{7,8}(?:[-\s]?\d{1,4})?(?!\d)")
 BIRTH_PAT = re.compile(r"(出生日期|出生年月|生日)\s*[:：]?\s*"
                        r"\d{4}\s*[-/年.]\s*\d{1,2}\s*[-/月.]\s*\d{1,2}\s*日?")
 # 门牌层：到"号/室/栋/单元"为止的细地址
-ADDR_PAT = re.compile(r"([\u4e00-\u9fa5]{1,12}(?:村|社区|居委|委会|街道|路|街|巷|弄|组|小区|花园|公寓|大厦|苑|里))"
+ADDR_PAT = re.compile(r"([\u4e00-\u9fa5A-Za-z]{1,12}(?:村|社区|居委|委会|街道|路|街|巷|弄|组|小区|花园|公寓|大厦|苑|里))"
                       r"\s*\d+\s*(?:号|号院)[^\s，。；、）)]{0,16}")
 UNIT_ADDR_PAT = re.compile(r"\d+\s*(?:号楼|栋|幢|单元)\s*\d*\s*(?:室|户)?")
 EMAIL_PAT = re.compile(r"[\w.+-]+@[\w-]+\.[\w.]+")
@@ -128,7 +128,7 @@ def redact(text, names=(), keep_surname=True):
              "门牌": 0, "邮箱": 0}
     out = text
 
-    # 1) 人名：长的先替换，避免"张志强"里的"张志"先被换掉
+    # 1) 人名：长的先替换，避免"张一"里的"张志"先被换掉
     used = {}
     for name in sorted(set(names), key=len, reverse=True):
         if name not in out:

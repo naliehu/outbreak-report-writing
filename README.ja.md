@@ -24,16 +24,16 @@ cd ~/.hermes/skills/outbreak-report-writing
 PY="env -u PYTHONPATH -u VIRTUAL_ENV vendor/venv/bin/python"
 
 # 5項目だけでも草案が出る
-$PY scripts/build_report.py --event examples/03-残缺输入/event.yaml \
+$PY scripts/build_report.py --event 事件.yaml \
     --stage initial --out ./我的输出 --formats md,docx,pdf
 
 # 実在の症例CSVを入力にする（図4枚を自動生成）
-$PY scripts/build_report.py --event examples/02-某实验学校水痘-真实个案/event.yaml \
-    --stage initial --line-list examples/02-某实验学校水痘-真实个案/个案-已脱敏.csv \
+$PY scripts/build_report.py --event 事件.yaml \
+    --stage initial --line-list 个案.csv \
     --out ./我的输出 --formats md,docx,pdf
 ```
 
-例示したパスは中国語の元フォルダ名です。そのまま使ってください。
+事案YAMLと症例CSVは自分で用意します。フィールド一覧は `references/intake-playbook.md` にあります。
 
 `--stage`：`initial` 初回報告／`progress` 経過報告／`final` 結案報告／`closure` 結案申請書／`case` 単一症例。
 
@@ -43,7 +43,7 @@ $PY scripts/build_report.py --event examples/02-某实验学校水痘-真实个�
 
 | 項目 | 原本版（内部） | 匿名化版（外部） |
 |---|---|---|
-| 氏名 | 冀斌 | 冀某（同姓で別人の場合は自動で番号付与） |
+| 氏名 | 张一 | 张某（同姓で別人の場合は自動で番号付与） |
 | 身分証番号／携帯／固定電話／メール | そのまま | （略） |
 | 生年月日 | 1995年7月30日 | （略）、年齢は保持 |
 | 住所 | Dieburger Str. 78 Darmstadt, 64287 | （略） |
@@ -114,7 +114,6 @@ templates/                .j2体裁テンプレート5種＋disease_profiles.yam
 scripts/                  epi_core / epi_viz / build_report / md2docx / flowreport
 plugin/                   Hermesプラグインのソース（epi_report ツールとして公開）
 tests/                    単体テスト
-examples/                 実行可能なサンプル3件＋生成済み成果物
 ```
 
 ## 同僚への配布

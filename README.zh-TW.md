@@ -24,16 +24,16 @@ cd ~/.hermes/skills/outbreak-report-writing
 PY="env -u PYTHONPATH -u VIRTUAL_ENV vendor/venv/bin/python"
 
 # 只有五個欄位也能出稿
-$PY scripts/build_report.py --event examples/03-残缺输入/event.yaml \
+$PY scripts/build_report.py --event 事件.yaml \
     --stage initial --out ./我的输出 --formats md,docx,pdf
 
 # 以真實個案 CSV 驅動（自動產出四張圖）
-$PY scripts/build_report.py --event examples/02-某实验学校水痘-真实个案/event.yaml \
-    --stage initial --line-list examples/02-某实验学校水痘-真实个案/个案-已脱敏.csv \
+$PY scripts/build_report.py --event 事件.yaml \
+    --stage initial --line-list 个案.csv \
     --out ./我的输出 --formats md,docx,pdf
 ```
 
-範例路徑是簡體中文的原始資料夾名稱，請照抄使用。
+事件 YAML 與個案 CSV 請自行準備，欄位清單見 `references/intake-playbook.md`。
 
 `--stage`：`initial` 初次／`progress` 進程／`final` 結案／`closure` 結案申請單／`case` 單一病例。
 
@@ -43,7 +43,7 @@ $PY scripts/build_report.py --event examples/02-某实验学校水痘-真实个�
 
 | 項目 | 未去識別化版（內部） | 去識別化版（對外） |
 |---|---|---|
-| 姓名 | 冀斌 | 冀某（同姓不同人自動加序號） |
+| 姓名 | 张一 | 张某（同姓不同人自動加序號） |
 | 身分證號／手機／市話／電子郵件 | 原樣 | （略） |
 | 出生日期 | 1995年7月30日 | （略），年齡保留 |
 | 住址 | Dieburger Str. 78 Darmstadt, 64287 | （略） |
@@ -115,7 +115,6 @@ templates/                五套 .j2 體裁範本 + disease_profiles.yaml（可�
 scripts/                  epi_core / epi_viz / build_report / md2docx / flowreport
 plugin/                   Hermes 外掛原始碼（封裝成 epi_report 工具）
 tests/                    單元測試
-examples/                 三個可執行範例 + 已產生成品
 ```
 
 ## 推廣給同事

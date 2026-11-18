@@ -109,13 +109,16 @@ class View(dict):
         p = self["event"].get("place") or {}
         inst = (self["event"].get("institution") or {}).get("name") or ""
         if isinstance(p, dict):
-            bits = [p.get("city"), p.get("district")]
-            s = "".join([b for b in bits if b])
-            if p.get("town") and p["town"] not in inst:
-                s += p["town"]
-            # 机构名已含"无锡市"时不再重复
-            if inst and s and inst.startswith(s[:3]) and s.startswith("无锡市"):
-                s = s[3:]
+            parts = [p.get("city"), p.get("district"), p.get("town")]
+            s = "".join([b for b in parts if b])
+            # 机构名里已经写明的层级（市/区/街道）不再重复；不写死任何城市名
+            if inst:
+                if parts[0] and parts[1] and parts[0] in inst and parts[1] in inst:
+                    s = ""            # 机构名已含市+区，前缀不再叠加
+                else:
+                    for part in parts:
+                        if part and part in inst:
+                            s = s.replace(part, "", 1)
             return s
         return str(p or "")
 
