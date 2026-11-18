@@ -30,6 +30,7 @@ import jinja2  # noqa: E402
 
 import epi_core as core  # noqa: E402
 import epi_viz as viz  # noqa: E402
+import deident  # noqa: E402  脱敏层
 
 TPL_DIR = os.path.join(os.path.dirname(HERE), "templates")
 STAGE_TPL = {
@@ -673,7 +674,7 @@ def to_pdf(docx_path, out_dir):
 
 # ------------------------------------------------------------------ 主流程
 def build(event_path, out_dir, stage="initial", line_list=None, formats=("md", "docx", "pdf"),
-          docx_profile="default", extra=None):
+          docx_profile="default", extra=None, privacy="both"):
     os.makedirs(out_dir, exist_ok=True)
     if event_path.endswith((".yaml", ".yml")):
         raw = core.load_yaml(event_path)
@@ -738,20 +739,38 @@ def build(event_path, out_dir, stage="initial", line_list=None, formats=("md", "
 
     base = os.path.splitext(os.path.basename(event_path))[0]
     name = event.get("filename") or f"{stage}-{base}"
-    md_path = os.path.join(out_dir, f"{name}.md")
-    with open(md_path, "w", encoding="utf-8") as f:
-        f.write(md)
 
-    outs = {"md": md_path}
-    if "docx" in formats:
-        docx_path = os.path.join(out_dir, f"{name}.docx")
-        p, err = to_docx(md_path, docx_path, docx_profile)
-        outs["docx"] = p or err
-        if p and "pdf" in formats:
-            pdf, err2 = to_pdf(p, out_dir)
-            outs["pdf"] = pdf or err2
-    elif "pdf" in formats:
-        outs["pdf"] = "PDF 需先导出 docx（Word 渲染链路），已跳过"
+    def emit(md_text, suffix):
+        """写 md（必要时转 docx/pdf），返回 {格式: 路径}。"""
+        md_path = os.path.join(out_dir, f"{name}{suffix}.md")
+        with open(md_path, "w", encoding="utf-8") as f:
+            f.write(md_text)
+        got = {"md": md_path}
+        if "docx" in formats:
+            docx_path = os.path.join(out_dir, f"{name}{suffix}.docx")
+            got_path, err = to_docx(md_path, docx_path, docx_profile)
+            got["docx"] = got_path or err
+            if got_path and "pdf" in formats:
+                pdf, err2 = to_pdf(got_path, out_dir)
+                got["pdf"] = pdf or err2
+        elif "pdf" in formats:
+            got["pdf"] = "PDF 需先导出 docx（Word 渲染链路），已跳过"
+        return {k: v for k, v in got.items() if v}
+
+    # 人名清单：事件字段 + 个案 CSV + YAML 里手工补的 privacy.names
+    names = set()
+    names |= deident.collect_from_event(event)
+    names |= deident.collect_from_line_list(ll)
+    names |= set((event.get("privacy") or {}).get("names") or [])
+
+    outs, red_outs, red_stats = {}, {}, None
+    # 未脱敏版是内部留档：名字直写，便于与个案表核对
+    if privacy in ("raw", "both"):
+        outs = emit(md, "")
+    # 脱敏版是外发稿：先改文本再转格式，图形与附表一并走
+    if privacy in ("redacted", "both"):
+        red_md, red_stats = deident.redact(md, names)
+        red_outs = emit(red_md, "-脱敏")
 
     report = {
         "完成度": f"{ctx['completeness']['score']}%（{ctx['completeness']['level']}）",
@@ -759,9 +778,14 @@ def build(event_path, out_dir, stage="initial", line_list=None, formats=("md", "
                   f"P1 {ctx['completeness']['by_grade'].get('P1', 0)} / "
                   f"P2 {ctx['completeness']['by_grade'].get('P2', 0)}",
         "图": len([x for x in fig_files]),
-        "输出": {k: v for k, v in outs.items() if v},
+        "输出": outs,
     }
-    return report, outs, md
+    if red_outs:
+        report["脱敏输出"] = red_outs
+        report["脱敏处理"] = deident.describe(red_stats)
+    if privacy == "redacted":
+        report["提示"] = "本次只出脱敏版；内部留档请加 --privacy raw 或 both。"
+    return report, (outs or red_outs), md
 
 
 def main():
@@ -772,6 +796,9 @@ def main():
     ap.add_argument("--out", default="./流调输出")
     ap.add_argument("--formats", default="md,docx,pdf")
     ap.add_argument("--docx-profile", default="default", choices=["default", "gongwen", "compact"])
+    ap.add_argument("--privacy", default="both", choices=["raw", "redacted", "both"],
+                    help="输出策略：raw=只出未脱敏版（内部留档）；redacted=只出脱敏版（可外发）；"
+                         "both=两版都出（默认）")
     ap.add_argument("--check", action="store_true", help="只做输入体检，不出稿")
     a = ap.parse_args()
 
@@ -788,7 +815,8 @@ def main():
         return
 
     report, outs, md = build(a.event, a.out, a.stage, a.line_list,
-                             tuple(x.strip() for x in a.formats.split(",")), a.docx_profile)
+                             tuple(x.strip() for x in a.formats.split(",")), a.docx_profile,
+                             privacy=a.privacy)
     print(json.dumps(report, ensure_ascii=False, indent=2))
 
 

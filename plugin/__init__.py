@@ -37,6 +37,9 @@ SCHEMA = {
                          "description": "逗号分隔，可选 md,docx,pdf"},
             "docx_profile": {"type": "string", "enum": ["default", "gongwen", "compact"],
                               "default": "default", "description": "Word 版式"},
+            "privacy": {"type": "string", "enum": ["both", "raw", "redacted"], "default": "both",
+                         "description": "输出策略：both=未脱敏版+脱敏版（默认）；raw=只出未脱敏版；"
+                                        "redacted=只出脱敏版（可外发，姓名改化名，证件/电话/门牌（略））"},
         },
         "required": ["event_path"],
     },
@@ -69,7 +72,8 @@ def handler(args, **kwargs):
         cmd += ["--out", out_dir,
                 "--stage", args.get("stage") or "initial",
                 "--formats", args.get("formats") or "md,docx,pdf",
-                "--docx-profile", args.get("docx_profile") or "default"]
+                "--docx-profile", args.get("docx_profile") or "default",
+                "--privacy", args.get("privacy") or "both"]
         if args.get("line_list"):
             cmd += ["--line-list", args["line_list"]]
 

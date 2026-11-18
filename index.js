@@ -130,6 +130,13 @@ export function apply(ctx, config = {}) {
         type: 'string',
         description: '可选：逗号分隔的导出格式，默认 md,docx,pdf。缺 python-docx 时 docx/pdf 会跳过并说明。',
       },
+      privacy: {
+        type: 'string',
+        enum: ['both', 'raw', 'redacted'],
+        description: '输出策略：both=同时出未脱敏版与脱敏版（默认）；raw=只出未脱敏版（内部留档）；'
+          + 'redacted=只出脱敏版（可外发）。脱敏版把姓名换成张某这类化名，身份证、手机、固话、'
+          + '邮箱、出生日期、门牌号一律（略），机构与地名保留。',
+      },
       docx_profile: {
         type: 'string',
         enum: ['default', 'gongwen', 'compact'],
@@ -153,6 +160,7 @@ export function apply(ctx, config = {}) {
           '--stage', args.stage || 'initial',
           '--formats', args.formats || 'md,docx,pdf',
           '--docx-profile', args.docx_profile || 'default',
+          '--privacy', args.privacy || 'both',
         )
         if (args.line_list) argv.push('--line-list', args.line_list)
       }
