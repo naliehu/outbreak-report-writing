@@ -2,13 +2,9 @@
 
 [English](README.en.md) · **简体中文** · [繁體中文（台灣）](README.zh-TW.md) · [Deutsch](README.de.md) · [日本語](README.ja.md)
 
-能将**仅有的、**不完整的现场信息，变成一份当下就能上报的流调报告：正文按疾控体例写，
-暂缺的，未获得的流调信息部分会按照紧迫程度在报告最后罗列，相关流行病可视化配图按病种自动配齐，Word／PDF／Markdown 随时导出，会生成原版和脱敏版。
+把不完整的现场信息变成一份当下就能上报的流调报告：正文按疾控体例写，缺的流调信息按紧迫程度列在末尾，配图按病种自动配齐，Word／PDF／Markdown 随时导出，原版与脱敏版各一份。给它事件信息和个案表就能出稿，缺什么、多急，附录 A 会写清楚。
 
-这套东西不是简单的流调报告“模板”。它从 **1300 余份真实流调文稿**的结案报告里反向提炼：章节骨架来自 477 份报告的实测顺序，文风参数来自 16815 句的统计，
-病种判据来自原文写明的观察期与处置口径。
-
-一句话：给它事件信息加个案表，直接出 Word、PDF 和四张图；缺什么数据它会按「阻断传播、影响研判、完善叙述」三级排序列出来，告诉你 24 小时内还差什么。Mac 下载解压即用，Windows 跑一次 `install.ps1`。
+章节骨架、文风参数与病种判据从 1300 余份真实流调报告反向提炼：477 份定章节顺序，16815 句定文风，原文口径定判据。macOS 与 Windows 包都是解压即用。
 
 ## 解决什么问题
 
@@ -21,57 +17,22 @@
 | 写完不知道还需流调哪些重要信息 | 附录 A 的 P0 就是核心信息，自检 12 问逐条过 |
 | 结案报告缺成本效益分析 | 第九节按国家标准科目分项，直接给表格 |
 
-> **⚠️ 从 GitHub clone 的版本不含 `vendor/`。** `vendor/`（约 150 MB，含 `spec`、`report_engine`、`flowfig`、`report_export` 与 `venv`）被 `.gitignore` 排除，需另行取得并放回技能根目录。缺它时**全量引擎** `scripts/flowreport.py` 不可用（报「vendor 目录不完整」），而下面的**轻量模板引擎** `scripts/build_report.py` 自包含、开箱即用。
+> **从 GitHub clone 的版本不含 `vendor/`**（约 150 MB，被 `.gitignore` 排除），需另行取得并放回技能根目录。缺它时全量引擎 `scripts/flowreport.py` 不可用，轻量引擎 `scripts/build_report.py` 不受影响。
 
-## 安装（两条路，选一条）
-
-### A. 轻量版 —— clone 就能用
-
-```bash
-git clone --depth 1 https://github.com/naliehu/outbreak-report-writing.git
-mkdir -p ~/.dsh/skills
-rsync -a --exclude=.git outbreak-report-writing/ ~/.dsh/skills/outbreak-report-writing/
-python3 -m pip install --user jinja2 matplotlib python-docx
-```
-
-**装完是什么样**：目录里没有 `vendor/`，能用的只有 `scripts/build_report.py` 一条路。
-
-**能干**：事件 YAML（五个字段起）+ 个案 CSV → 六种体裁正文 + 4 张图 + md/docx/pdf（附脱敏版）+ 附录 A 缺项分级（P0 24 小时 / P1 48 小时 / P2 结案前）。
-
-**干不了**：没有 93 字段模型校验，没有 L1/L2/L3 定稿阻断判定，没有「数据不全改图注」的降级矩阵，没有阶段快照与三格式一致性核对。此时 `scripts/flowreport.py doctor` 会红：
-
-```
-✗ 规格包 vendor/spec   vendor 目录不完整，找不到 report_engine：No module named 'report_engine'
-```
-
-### B. 全量版 —— 把 `vendor/` 一起带上
-
-```bash
-# 从一台已有 vendor 的机器整体同步（含 venv），不要用 git clone 拿这一份
-rsync -a --exclude=.git --exclude=__pycache__ \
-  /path/to/已有完整副本/ ~/.dsh/skills/outbreak-report-writing/
-
-# 自检：八项全绿再往下走
-python3 ~/.dsh/skills/outbreak-report-writing/scripts/flowreport.py doctor
-```
-
-**装完是什么样**：多出 `vendor/`（约 150 MB），doctor 打印 `✓ 规格包 vendor/spec  93 字段 / 11 章 / schema …`。
-
-**能干**：`report.json`（93 字段）→ 11 章 / 17 表 / 4 图 / 16 页 PDF；缺项在正文就地高亮并按 L1/L2/L3 判定是否阻断定稿；封面给 Top3 必补项；第十章给逐条补采途径与时限；存阶段快照；核对 md=docx=pdf 三格式一致。
-
-**注意**：`vendor/venv` 里的 Python 按打包机器的架构编译，换平台会失效——脚本与插件会自动回退到系统 `python3`，装齐 `requirements.txt` 里的依赖即可；也可跑 `bash install.sh`（macOS／Linux）或 `powershell -ExecutionPolicy Bypass -File install.ps1`（Windows）现场重建 venv。
+## 安装
 
 ### 平台包（Releases）
 
-| 平台 | 文件 | 装完即得的形态 |
+| 平台 | 文件 | 内容 |
 |---|---|---|
-| macOS（Apple Silicon） | `outbreak-report-writing-<ver>-macos-arm64.tar.gz` | 含 `vendor/venv`（arm64，自带独立解释器），解压改路径即用，无需 pip、不依赖本机 Python |
-| macOS（Intel） | `outbreak-report-writing-<ver>-macos-x86_64.tar.gz` | 含 `vendor/venv`（x86_64，自带独立解释器），Intel 机型解压即用，无需 pip |
-| Windows（x64，免安装） | `outbreak-report-writing-<ver>-windows-x64-embedded.zip` | 含 `vendor/python`（整只 CPython 3.12 + 全部依赖），解压即用；装成 DSH 插件时自带解释器一并复制，**完全不碰本机 Python** |
-| Windows（x64，轻量） | `outbreak-report-writing-<ver>-windows-x64.zip` | 只有代码、不含解释器；先跑一次 `install.ps1` 建 `vendor\venv`（需 Python 3.10+） |
-| 任意平台 | `git clone` | 轻量版直接可用；要全量得自备 `vendor/` |
+| macOS（Apple Silicon） | `outbreak-report-writing-<ver>-macos-arm64.tar.gz` | 含 `vendor/venv`（arm64 独立解释器 + 依赖），解压改路径即用 |
+| macOS（Intel） | `outbreak-report-writing-<ver>-macos-x86_64.tar.gz` | 同上，x86_64 版 |
+| Windows（x64） | `outbreak-report-writing-<ver>-windows-x64-embedded.zip` | 含 `vendor/python`（CPython 3.12 + 依赖），解压即用，不碰本机 Python |
+| 任意平台 | `git clone` | 轻量版直接可用；全量需自备 `vendor/` |
 
-PDF 有两条路：装了 LibreOffice（macOS：`brew install --cask libreoffice`；Windows：装 LibreOffice 后默认在 Program Files 下，也可用 `SOFFICE_BIN` 指定）就走 docx→pdf，版式与 Word 完全一致；**没装也不必折腾**，程序会自动用内置的 PyMuPDF 排版引擎出 PDF（内容、图表、分页齐全，版式是独立一套，与 docx 版略有差别）。md/docx 不依赖任何外部程序。
+PDF 两种出法：装了 LibreOffice 走 docx→pdf，版式与 Word 一致；没装则自动用内置 PyMuPDF 排版，内容与图表齐全，版式另成一套。md/docx 不依赖外部程序。
+
+`vendor/venv` 按打包机器的架构编译，换平台会失效：脚本与插件自动回退到系统 `python3`，或跑一次 `install.sh`（macOS／Linux）／`install.ps1`（Windows）重建。
 
 ## 快速上手
 
@@ -114,7 +75,7 @@ $PY scripts/build_report.py --event 事件.yaml \
 - **轻量模板**（`scripts/build_report.py`）：事件 YAML 或大疫情网 CSV → 六种体裁直出。单例、临时、只有一份导出表时用这个。
 - **全量引擎**（`scripts/flowreport.py`）：report.json（93 字段／11 章）→ 四图 + 三格式 + 快照 + 签发门禁。要连出十几期进程报告、进审签流程时用这个。
 
-两条路径的缺项分级是同一套判据的两种叫法：L1 阻断传播 = P0，L2 影响研判 = P1，L3 完善叙述 = P2。
+两套引擎的缺项分级同源：L1 = P0，L2 = P1，L3 = P2。
 
 ## 隐私
 

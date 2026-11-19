@@ -2,9 +2,9 @@
 
 [English](README.en.md) · [简体中文](README.md) · [繁體中文（台灣）](README.zh-TW.md) · **Deutsch** · [日本語](README.ja.md)
 
-Macht aus den **einzigen** bruchstückhaften Feldinformationen, die man hat, einen sofort berichtsfähigen Ausbruchsbericht: Der Text folgt dem chinesischen CDC-Berichtsstil, was noch fehlt oder nicht beschaffbar ist, wird am Berichtsende nach Dringlichkeit aufgelistet, epidemiologische Abbildungen werden der Krankheit entsprechend automatisch ergänzt, Export nach Word / PDF / Markdown jederzeit — in zwei Fassungen, roh und de-identifiziert.
+Macht aus lückenhaften Feldinformationen einen sofort berichtsfähigen Ausbruchsbericht: Text im chinesischen CDC-Amtsstil, fehlende Angaben am Ende nach Dringlichkeit gelistet, Abbildungen je Krankheit automatisch ergänzt, Export nach Word / PDF / Markdown, roh und de-identifiziert. Ereignisdatei und Fallliste hinein, Anhang A sagt, was fehlt und wie dringend.
 
-Das hier ist keine einfache Ausbruchsbericht-„Vorlage". Es wurde aus den Abschlussberichten von **über 1.300 echten Ausbruchsakten** rückwärts rekonstruiert: Kapitelskelett aus der gemessenen Reihenfolge in 477 Berichten, Stilparameter aus der Statistik über 16.815 Sätze, Krankheitskriterien aus den in den Quellen genannten Beobachtungszeiträumen und Behandlungsregeln. Achtung: Der Skill selbst, seine Vorlagen, die kodierten Kriterien und die erzeugten Berichte sind **chinesisch** — ein Amtsformat des chinesischen CDC. Diese Übersetzungen dienen nur dazu, dass nicht chinesischsprachige Kolleginnen und Kollegen das Paket lesen, installieren und erweitern können.
+Kapitelreihenfolge, Stilparameter und Krankheitskriterien sind aus über 1.300 echten Ausbruchsakten rekonstruiert: 477 Berichte für die Kapitelreihenfolge, 16.815 Sätze für den Stil, Originalwortlaut für die Kriterien. Die Pakete für macOS und Windows laufen nach dem Auspacken. Die Berichte selbst sind chinesische Amtsdokumente; diese Übersetzungen dienen dem Lesen, Installieren und Erweitern.
 
 ## Welches Problem das löst
 
@@ -17,30 +17,20 @@ Das hier ist keine einfache Ausbruchsbericht-„Vorlage". Es wurde aus den Absch
 | Unklar, welche wichtigen Angaben noch zu ermitteln sind | Die P0-Punkte in Anhang A sind die entscheidenden; eine 12-Punkte-Selbstprüfung geht sie durch |
 | Abschlussbericht ohne Kosten-Nutzen-Analyse | Abschnitt 9 gliedert die Kosten nach den nationalen Standardkategorien und liefert die Tabelle |
 
-> **⚠️ Ein GitHub-Clone enthält kein `vendor/`.** Der Ordner `vendor/` (~150 MB: `spec`, `report_engine`, `flowfig`, `report_export`, `venv`) ist per `.gitignore` ausgeschlossen und muss separat beschafft und in das Skill-Wurzelverzeichnis gelegt werden. Ohne ihn ist die **vollständige Engine** `scripts/flowreport.py` nicht nutzbar („vendor 目录不完整"), während die **schmale Template-Engine** `scripts/build_report.py` unten eigenständig und sofort einsatzbereit ist.
+> **Ein GitHub-Clone enthält kein `vendor/`** (~150 MB, per `.gitignore` ausgeschlossen); separat beschaffen und ins Skill-Wurzelverzeichnis legen. Ohne ihn läuft die Vollversion `scripts/flowreport.py` nicht; der Light-Modus `scripts/build_report.py` ist davon unberührt.
 
-## Installation (zwei Wege, einen wählen)
+## Installation
 
-### A. Schlank — klonen und loslegen
+### Plattformpakete
 
-```bash
-git clone --depth 1 https://github.com/naliehu/outbreak-report-writing.git
-rsync -a --exclude=.git outbreak-report-writing/ ~/.dsh/skills/outbreak-report-writing/
-python3 -m pip install --user jinja2 matplotlib python-docx
-```
+| Plattform | Datei | Inhalt |
+|---|---|---|
+| macOS (Apple Silicon) | `outbreak-report-writing-<ver>-macos-arm64.tar.gz` | Interpreter (arm64) und Abhängigkeiten enthalten, auspacken und loslegen |
+| macOS (Intel) | `outbreak-report-writing-<ver>-macos-x86_64.tar.gz` | dasselbe als x86_64-Build |
+| Windows (x64) | `outbreak-report-writing-<ver>-windows-x64-embedded.zip` | Interpreter und Abhängigkeiten enthalten, auspacken und loslegen |
+| beliebig | `git clone` | Light-Modus sofort nutzbar; Vollmodus braucht eigenes `vendor/` |
 
-Ohne `vendor/` funktioniert nur `scripts/build_report.py`: Ereignis-YAML + Fallliste-CSV → sechs Berichtsgenres + 4 Abbildungen + md/docx/pdf (inkl. anonymisierter Fassung) + Anhang A mit Lückenklassen P0 (24 h) / P1 (48 h) / P2 (vor Abschluss). Keine 93-Feld-Prüfung, keine L1/L2/L3-Freigabeschwelle, kein Phasen-Snapshot.
-
-### B. Vollständig — `vendor/` mitnehmen
-
-```bash
-rsync -a --exclude=.git --exclude=__pycache__ /pfad/zur/vollstaendigen/kopie/ ~/.dsh/skills/outbreak-report-writing/
-python3 ~/.dsh/skills/outbreak-report-writing/scripts/flowreport.py doctor   # erst weiter, wenn alle acht grün sind
-```
-
-Ergänzt `vendor/` (~150 MB): `report.json` (93 Felder) → 11 Kapitel / 17 Tabellen / 4 Abbildungen / 16-seitiges PDF, Lücken inline markiert und nach L1/L2/L3 bewertet, Top-3-Blocker auf dem Deckblatt, Phasen-Snapshots, Konsistenzprüfung md=docx=pdf. Das `vendor/venv` ist architekturspezifisch — auf anderer Plattform `bash install.sh` bzw. `install.ps1` ausführen.
-
-Plattformpakete in den Releases: macOS (Apple Silicon) mit venv, macOS (Intel) ebenfalls mit venv (eigenständiger x86_64-Interpreter) — beide auspacken und loslegen; Windows (x64) ohne venv (einmal `install.ps1`). PDF hat zwei Wege: mit LibreOffice läuft md → docx → pdf mit identischem Layout wie Word; ohne LibreOffice greift automatisch die eingebaute PyMuPDF-Engine (Inhalt, Abbildungen und Seitenumbruch vollständig, eigenes Layout). md/docx brauchen nichts Zusätzliches.
+PDF auf zwei Wegen: mit LibreOffice über docx → pdf (Layout wie Word); ohne LibreOffice setzt die eingebaute PyMuPDF-Engine (gleicher Inhalt und Abbildungen, eigenes Layout). md/docx brauchen nichts Zusätzliches.
 
 ## Schnellstart
 
@@ -82,7 +72,7 @@ Im Plugin heißt der Parameter `privacy`. Namenslisten werden automatisch aus de
 - **Leichtgewichtige Vorlage** (`scripts/build_report.py`): Ereignis-YAML oder Linelist-CSV → eines der sechs Genres direkt. Für Einzelfälle, Ad-hoc-Arbeit oder wenn nur eine exportierte Tabelle vorliegt.
 - **Vollmaschine** (`scripts/flowreport.py`): `report.json` (93 Felder / 11 Kapitel) → vier Abbildungen + drei Formate + Snapshots + Freigabe-Gate. Wenn ein Dutzend aufeinanderfolgender Verlaufsberichte durch Prüfung und Zeichnung müssen.
 
-Die Lückenbewertung ist dieselbe Systematik unter zwei Namen: L1 blockiert Übertragung = P0, L2 beeinflusst die Bewertung = P1, L3 verbessert die Darstellung = P2.
+Beide Engines bewerten Lücken gleich: L1 = P0, L2 = P1, L3 = P2.
 
 ## Datenschutz
 

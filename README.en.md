@@ -2,9 +2,9 @@
 
 **English** · [简体中文](README.md) · [繁體中文（台灣）](README.zh-TW.md) · [Deutsch](README.de.md) · [日本語](README.ja.md)
 
-Turns the **only** fragmentary field information you have into an outbreak investigation report you can submit right now: the body follows Chinese CDC house style, whatever is still missing or unobtainable is listed at the end of the report by urgency, epidemiological figures are matched to the disease automatically, Word / PDF / Markdown export at any point — in two versions, raw and de-identified.
+Turns incomplete field information into an outbreak report you can submit now: CDC house style, missing items listed at the end by urgency, figures matched to the disease, Word / PDF / Markdown export, raw and de-identified versions. Give it an event file and a case list and it drafts; Appendix A says what is missing and how urgently.
 
-This is not a simple outbreak-report "template". It was reverse-engineered from the final reports among **1,300+ real outbreak dossiers**: the chapter skeleton from the measured ordering in 477 reports, the style parameters from statistics over 16,815 sentences, the disease criteria from observation windows and handling rules stated in the source texts. Note that the skill itself, its templates, the criteria it encodes and the reports it emits are **Chinese** — a Chinese CDC official-document format; these translations exist only so non-Chinese-speaking colleagues can read, install and extend it.
+Chapter order, style parameters and disease criteria are reverse-engineered from 1,300+ real dossiers: 477 reports for chapter order, 16,815 sentences for style, source wording for criteria. Both macOS and Windows bundles run unpacked. The reports themselves are Chinese CDC official documents; these translations are for reading, installing and extending the skill.
 
 ## What it solves
 
@@ -17,43 +17,20 @@ This is not a simple outbreak-report "template". It was reverse-engineered from 
 | Unsure which important information still needs investigating | The P0 items in Appendix A are the critical ones; a 12-question self-check walks through them |
 | Closure report missing a cost-benefit analysis | Section 9 breaks costs down by the national standard categories and gives you the table |
 
-> **⚠️ A GitHub clone does not include `vendor/`.** The `vendor/` tree (~150 MB: `spec`, `report_engine`, `flowfig`, `report_export`, `venv`) is excluded by `.gitignore` and must be obtained separately and placed in the skill root. Without it the **full engine** `scripts/flowreport.py` fails ("vendor 目录不完整"), while the **lightweight template engine** `scripts/build_report.py` below is self-contained and works out of the box.
+> **A GitHub clone does not include `vendor/`** (~150 MB, excluded by `.gitignore`); obtain it separately and place it in the skill root. Without it the full engine `scripts/flowreport.py` is unavailable; the light engine `scripts/build_report.py` is unaffected.
 
-## Install (two ways, pick one)
-
-### A. Light — clone and go
-
-```bash
-git clone --depth 1 https://github.com/naliehu/outbreak-report-writing.git
-mkdir -p ~/.dsh/skills
-rsync -a --exclude=.git outbreak-report-writing/ ~/.dsh/skills/outbreak-report-writing/
-python3 -m pip install --user jinja2 matplotlib python-docx
-```
-
-No `vendor/` in this mode, so only `scripts/build_report.py` works: event YAML (five fields is enough) + line-list CSV → six report genres + 4 figures + md/docx/pdf (plus a redacted copy) + Appendix A gap list graded P0 (24 h) / P1 (48 h) / P2 (before closure). No 93-field validation, no L1/L2/L3 finalisation gate, no stage snapshot, no cross-format consistency check — `scripts/flowreport.py doctor` will report a missing `vendor/spec`.
-
-### B. Full — bring `vendor/` along
-
-```bash
-rsync -a --exclude=.git --exclude=__pycache__ \
-  /path/to/complete-copy/ ~/.dsh/skills/outbreak-report-writing/
-python3 ~/.dsh/skills/outbreak-report-writing/scripts/flowreport.py doctor   # all eight green before use
-```
-
-Adds `vendor/` (~150 MB): `report.json` (93 fields) → 11 chapters / 17 tables / 4 figures / 16-page PDF, gaps highlighted in place and graded L1/L2/L3 to decide whether finalisation is blocked, top-3 blockers on the cover, per-item collection routes in chapter 10, stage snapshots, and md=docx=pdf consistency verification.
-
-`vendor/venv` is architecture-specific: on another platform the scripts fall back to system `python3`, so install `requirements.txt` there, or run `bash install.sh` (macOS/Linux) / `powershell -ExecutionPolicy Bypass -File install.ps1` (Windows) to rebuild the venv.
+## Install
 
 ### Platform bundles (Releases)
 
-| Platform | File | What you get |
+| Platform | File | Contents |
 |---|---|---|
-| macOS (Apple Silicon) | `outbreak-report-writing-<ver>-macos-arm64.tar.gz` | ships `vendor/venv` (arm64, self-contained interpreter) — unpack and run, no pip and no system Python needed |
-| macOS (Intel) | `outbreak-report-writing-<ver>-macos-x86_64.tar.gz` | ships `vendor/venv` (x86_64, self-contained interpreter) — unpack and run on Intel Macs, no pip needed |
-| Windows (x64) | `outbreak-report-writing-<ver>-windows-x64.zip` | ships `vendor/` code without venv — run `install.ps1` once (needs Python 3.10+) |
-| any | `git clone` | light mode works immediately; full mode needs your own `vendor/` |
+| macOS (Apple Silicon) | `outbreak-report-writing-<ver>-macos-arm64.tar.gz` | bundled arm64 interpreter and dependencies; unpack and run |
+| macOS (Intel) | `outbreak-report-writing-<ver>-macos-x86_64.tar.gz` | same, x86_64 build |
+| Windows (x64) | `outbreak-report-writing-<ver>-windows-x64-embedded.zip` | bundled interpreter and dependencies; unpack and run |
+| any | `git clone` | light mode works as-is; full mode needs your own `vendor/` |
 
-PDF export has two routes. With LibreOffice installed (`brew install --cask libreoffice` on macOS; on Windows it lands under Program Files, or point `SOFFICE_BIN` at it) the pipeline is md → docx → pdf and the layout matches Word exactly. Without it, nothing breaks: the built-in PyMuPDF layout engine produces the PDF directly (all content, figures and pagination; layout is its own scheme, slightly different from the docx version). md/docx need nothing extra.
+PDF has two routes: with LibreOffice it goes docx → pdf and matches Word; without it the built-in PyMuPDF engine lays it out directly — same content and figures, its own layout. md/docx need no external program.
 
 ## Quick start
 
@@ -95,7 +72,7 @@ The plugin exposes the same as `privacy`. Name lists are collected automatically
 - **Lightweight template** (`scripts/build_report.py`): event YAML or line-list CSV → any of the six genres directly. Use this for single cases, ad-hoc work, or when you only have one exported table.
 - **Full engine** (`scripts/flowreport.py`): `report.json` (93 fields / 11 chapters) → four figures + three formats + snapshots + a sign-off gate. Use this when you need a dozen consecutive progress reports inside a review-and-sign workflow.
 
-The gap grading is the same criteria under two names: L1 blocks transmission = P0, L2 affects assessment = P1, L3 improves narrative = P2.
+Both engines grade gaps the same way: L1 = P0, L2 = P1, L3 = P2.
 
 ## Privacy
 

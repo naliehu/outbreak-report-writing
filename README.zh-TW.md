@@ -2,9 +2,9 @@
 
 [English](README.en.md) · [简体中文](README.md) · **繁體中文（台灣）** · [Deutsch](README.de.md) · [日本語](README.ja.md)
 
-能把**僅有的**、不完整的現場資訊，變成一份當下就能陳報的疫情調查報告：本文依疾管機關體例撰寫，暫缺、未取得的疫調資訊會依急迫程度條列在報告最後，相關流行病學視覺化圖依病種自動備齊，Word／PDF／Markdown 隨時匯出，並同時產出原版與去識別化版。
+把不完整的現場資訊變成一份當下就能陳報的疫調報告：本文依疾管機關體例撰寫，暫缺的疫調資訊依急迫程度列在最後，圖表依病種自動備齊，Word／PDF／Markdown 隨時匯出，原版與去識別化版各一份。給它事件檔和個案表就能出稿，缺什麼、多急，附錄 A 會寫清楚。
 
-這套東西不是單純的疫調報告「範本」。它是從 **1300 餘份真實疫調文稿**的結案報告反向提煉而來：章節骨架取自 477 份報告的實測順序，文風參數來自 16,815 句的統計，病種判準來自原文載明的觀察期與處置原則。請注意：技能本體、範本、內建的判定基準與產出的報告都是**中文**（中國疾控公文格式），這幾份翻譯說明只是讓不諳中文的協力者能讀懂、安裝與擴充。
+章節骨架、文風參數與病種判準從 1300 餘份真實疫調報告反向提煉：477 份定章節順序，16,815 句定文風，原文口徑定判準。macOS 與 Windows 包都是解壓即用。報告本身是中國疾控公文（中文），這幾份翻譯只是為了讓不諳中文的協力者能讀懂、安裝與擴充。
 
 ## 解決什麼問題
 
@@ -17,30 +17,22 @@
 | 寫完不知道還需疫調哪些重要資訊 | 附錄 A 的 P0 就是核心資訊，12 項自我檢查逐條核對 |
 | 結案報告缺成本效益分析 | 第九節依國家標準科目分項，直接給表格 |
 
-> **⚠️ 從 GitHub clone 的版本不含 `vendor/`。** `vendor/`（約 150 MB，含 `spec`、`report_engine`、`flowfig`、`report_export` 與 `venv`）被 `.gitignore` 排除，需另行取得並放回技能根目錄。缺它時**全量引擎** `scripts/flowreport.py` 不可用（報「vendor 目錄不完整」），而下面的**輕量模板引擎** `scripts/build_report.py` 自包含、開箱即用。
+> **從 GitHub clone 的版本不含 `vendor/`**（約 150 MB，被 `.gitignore` 排除），需另行取得並放回技能根目錄。缺它時全量引擎 `scripts/flowreport.py` 不可用，輕量引擎 `scripts/build_report.py` 不受影響。
 
-## 安裝（兩條路，選一條）
+## 安裝
 
-### A. 輕量版 —— clone 就能用
+### 平台包
 
-```bash
-git clone --depth 1 https://github.com/naliehu/outbreak-report-writing.git
-rsync -a --exclude=.git outbreak-report-writing/ ~/.dsh/skills/outbreak-report-writing/
-python3 -m pip install --user jinja2 matplotlib python-docx
-```
+| 平台 | 檔案 | 內容 |
+|---|---|---|
+| macOS（Apple Silicon） | `outbreak-report-writing-<ver>-macos-arm64.tar.gz` | 內含 `vendor/venv`（arm64 獨立解譯器 + 相依套件），解壓改路徑即用 |
+| macOS（Intel） | `outbreak-report-writing-<ver>-macos-x86_64.tar.gz` | 同上，x86_64 版 |
+| Windows（x64） | `outbreak-report-writing-<ver>-windows-x64-embedded.zip` | 內含 `vendor/python`（CPython 3.12 + 相依套件），解壓即用，不碰本機 Python |
+| 任意平台 | `git clone` | 輕量版直接可用；全量需自備 `vendor/` |
 
-裝完沒有 `vendor/`，只有 `scripts/build_report.py` 走得通：事件 YAML + 個案 CSV → 六種體裁 + 4 張圖 + md/docx/pdf（含脫敏版）+ 附錄 A 缺項分級（P0 24 小時 / P1 48 小時 / P2 結案前）。沒有 93 欄位校驗、沒有 L1/L2/L3 定稿阻斷、沒有階段快照。
+PDF 兩種出法：裝了 LibreOffice 走 docx→pdf，版式與 Word 一致；沒裝則自動用內建 PyMuPDF 排版，內容與圖表齊全，版式另成一套。md/docx 不依賴外部程式。
 
-### B. 全量版 —— 連 `vendor/` 一起帶
-
-```bash
-rsync -a --exclude=.git --exclude=__pycache__ /path/to/完整副本/ ~/.dsh/skills/outbreak-report-writing/
-python3 ~/.dsh/skills/outbreak-report-writing/scripts/flowreport.py doctor   # 八項全綠再用
-```
-
-多出 `vendor/`（約 150 MB）：`report.json`（93 欄位）→ 11 章 / 17 表 / 4 圖 / 16 頁 PDF，缺項就地高亮並按 L1/L2/L3 判定是否阻斷定稿，封面給 Top3 必補項，另存階段快照並核對三格式一致。`vendor/venv` 依打包機器架構編譯，換平台請跑 `bash install.sh` 或 `install.ps1` 重建。
-
-平台包見 Releases：macOS（Apple Silicon）含 venv 解壓即用；macOS（Intel）同樣含 venv（x86_64 獨立解釋器）解壓即用；Windows（x64）不含 venv，先跑 `install.ps1`。PDF 有兩條路：裝了 LibreOffice 走 docx→pdf，版式與 Word 一致；沒裝會自動用內建 PyMuPDF 排版引擎出 PDF（內容、圖表、分頁齊全，版式獨立一套）。md/docx 不需要任何外部程式。
+`vendor/venv` 依打包機器的架構編譯，換平台會失效：腳本與外掛會自動回退到系統 `python3`，或跑一次 `install.sh`（macOS／Linux）／`install.ps1`（Windows）重建。
 
 ## 快速上手
 
@@ -82,7 +74,7 @@ $PY scripts/build_report.py --event 事件.yaml \
 - **輕量範本**（`scripts/build_report.py`）：事件 YAML 或大疫情網 CSV → 六種體裁直出。單一病例、臨時任務、手上只有一份匯出表時用這個。
 - **完整引擎**（`scripts/flowreport.py`）：`report.json`（93 個欄位／11 章）→ 四張圖 + 三種格式 + 快照 + 簽核閘門。要連續產出十幾期進程報告、進入審簽流程時用這個。
 
-兩條路徑的缺漏分級是同一套判準的兩種說法：L1 阻斷傳播 = P0，L2 影響研判 = P1，L3 完善敘述 = P2。
+兩套引擎的缺漏分級同源：L1 = P0，L2 = P1，L3 = P2。
 
 ## 隱私
 

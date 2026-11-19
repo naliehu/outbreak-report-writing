@@ -2,9 +2,9 @@
 
 [English](README.en.md) · [简体中文](README.md) · [繁體中文（台灣）](README.zh-TW.md) · [Deutsch](README.de.md) · **日本語**
 
-手元に**わずかしかない**不完全な現場情報から、その場で提出できる疫学調査報告書を作ります。本文は中国CDCの公文書様式に従い、未取得・未確認の疫学情報は緊急度順に報告書の末尾へ列挙され、疫学的な可視化図は疾患ごとに自動で揃い、Word／PDF／Markdown へいつでも書き出せます。原本版と匿名化版の2種類を同時に生成します。
+不完全な現場情報から、その場で提出できる疫学調査報告書を作ります。本文は中国CDCの公文書様式、未取得の疫学情報は緊急度順に末尾へ、図は疾患ごとに自動で揃い、Word／PDF／Markdown へ書き出し、原本版と匿名化版を同時に生成します。イベント情報と症例リストを渡せば草稿が出ます。何が足りないかは付録Aに書かれます。
 
-これは単なる疫学調査報告書の「テンプレート」ではありません。**1,300件余りの実在の調査記録**のうち結案報告から逆算して作り上げたもので、章立ては477件の報告書で実測した順序、文体パラメータは16,815文の統計、疾患判定基準は原文に明記された観察期間と対応方針に基づきます。なお、スキル本体・テンプレート・組み込まれた判定基準・生成される報告書はいずれも**中国語**（中国CDCの公文書様式）です。この翻訳READMEは、中国語を解さない協力者が内容を理解し、導入し、拡張できるようにするためのものです。
+章立て・文体パラメータ・疾患判定基準は 1,300 件余りの実在調査記録から逆算しています：477 件で章順、16,815 文で文体、原文の記載で判定基準。macOS と Windows のパッケージは解凍するだけで動きます。報告書本体は中国CDCの公文書（中国語）で、この翻訳は読む・導入する・拡張するためのものです。
 
 ## 何を解決するか
 
@@ -17,30 +17,20 @@
 | どの重要情報をまだ調査すべきか分からない | 付録AのP0が核心となる情報。12項目のセルフチェックで順に確認 |
 | 結案報告に費用便益分析が欠けている | 第9節で国家標準の科目ごとに分類し、表をそのまま提示 |
 
-> **⚠️ GitHub から clone した版には `vendor/` が含まれません。** `vendor/`（約 150 MB：`spec`、`report_engine`、`flowfig`、`report_export`、`venv`）は `.gitignore` で除外されているため、別途入手してスキルのルートに置く必要があります。無い場合、**フルエンジン** `scripts/flowreport.py` は動作せず（「vendor 目录不完整」）、下記の**軽量テンプレートエンジン** `scripts/build_report.py` は自己完結でそのまま使えます。
+> **GitHub から clone した版には `vendor/` が含まれません**（約 150 MB、`.gitignore` で除外）。別途入手してスキルのルートに置いてください。無い場合フルエンジン `scripts/flowreport.py` は使えませんが、軽量版 `scripts/build_report.py` は影響を受けません。
 
-## インストール（2通り、どちらか一方）
+## インストール
 
-### A. ライト版 — clone ですぐ動く
+### プラットフォーム別パッケージ
 
-```bash
-git clone --depth 1 https://github.com/naliehu/outbreak-report-writing.git
-rsync -a --exclude=.git outbreak-report-writing/ ~/.dsh/skills/outbreak-report-writing/
-python3 -m pip install --user jinja2 matplotlib python-docx
-```
+| プラットフォーム | ファイル | 内容 |
+|---|---|---|
+| macOS（Apple Silicon） | `outbreak-report-writing-<ver>-macos-arm64.tar.gz` | arm64 インタプリタと依存を同梱、解凍するだけ |
+| macOS（Intel） | `outbreak-report-writing-<ver>-macos-x86_64.tar.gz` | 同上（x86_64 ビルド） |
+| Windows（x64） | `outbreak-report-writing-<ver>-windows-x64-embedded.zip` | インタプリタと依存を同梱、解凍するだけ |
+| 任意 | `git clone` | 軽量版はそのまま使える；全量版は `vendor/` を自前で用意 |
 
-`vendor/` が無いため使えるのは `scripts/build_report.py` のみ：事象 YAML（5 項目から可）+ 症例リスト CSV → 6 種類の様式 + 図 4 枚 + md/docx/pdf（匿名化版つき）+ 付録 A の不足項目（P0 24 時間 / P1 48 時間 / P2 結案前）。93 項目検証・L1/L2/L3 確定ゲート・段階スナップショットはありません。
-
-### B. フル版 — `vendor/` ごと導入
-
-```bash
-rsync -a --exclude=.git --exclude=__pycache__ /完全コピーのパス/ ~/.dsh/skills/outbreak-report-writing/
-python3 ~/.dsh/skills/outbreak-report-writing/scripts/flowreport.py doctor   # 8 項目すべて緑で次へ
-```
-
-`vendor/`（約 150 MB）が加わり、`report.json`（93 項目）→ 11 章 / 表 17 / 図 4 / 16 ページ PDF、不足項目は本文中で強調され L1/L2/L3 で確定可否を判定、表紙に Top3 必須項目、段階スナップショット、md=docx=pdf の一致検証まで。`vendor/venv` はビルドしたマシンのアーキテクチャ依存なので、別環境では `install.sh` / `install.ps1` で再構築してください。
-
-プラットフォーム別パッケージは Releases に：macOS（Apple Silicon）は venv 同梱、macOS（Intel）も venv（x86_64 独立インタプリタ）同梱で解凍するだけ、Windows（x64）は venv 無しで `install.ps1` を一度実行。PDF は二通り：LibreOffice があれば md → docx → pdf で Word と同一レイアウト、無くても内蔵の PyMuPDF 組版エンジンが自動で PDF を生成（内容・図表・改ページは揃うがレイアウトは独自）。md/docx は追加ソフト不要。
+PDF は二通り：LibreOffice があれば docx → pdf（Word と同一レイアウト）、無ければ内蔵 PyMuPDF が直接組版（内容と図は同じ、レイアウトは独自）。md/docx は外部ソフト不要。
 
 ## クイックスタート
 
@@ -82,7 +72,7 @@ $PY scripts/build_report.py --event 事件.yaml \
 - **軽量テンプレート**（`scripts/build_report.py`）：事案YAMLまたは大疫情網CSV → 六体裁を直接出力。単一症例、臨時対応、エクスポート表が1枚しかない場合に。
 - **フルエンジン**（`scripts/flowreport.py`）：`report.json`（93フィールド／11章）→ 図4枚＋3形式＋スナップショット＋署名ゲート。十数期の経過報告を連続して作り、審査・署名フローに載せる場合に。
 
-両経路の欠測評価は同じ判定基準の別名です：L1 伝播阻止＝P0、L2 評価に影響＝P1、L3 記述の完成＝P2。
+両エンジンの欠測判定は同じ：L1 = P0、L2 = P1、L3 = P2。
 
 ## プライバシー
 
