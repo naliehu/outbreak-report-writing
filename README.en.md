@@ -32,6 +32,21 @@ Chapter order, style parameters and disease criteria are reverse-engineered from
 
 PDF has two routes: with LibreOffice it goes docx → pdf and matches Word; without it the built-in PyMuPDF engine lays it out directly — same content and figures, its own layout. md/docx need no external program.
 
+### Mainland China
+
+Where GitHub is unreliable, prefix the URL with a mirror: `https://ghfast.top/` or `https://ghproxy.net/` (swap when one stops working; change the version as needed).
+
+```bash
+# plugin (~0.5 MB)
+dsh plugin add https://ghfast.top/https://github.com/naliehu/outbreak-report-writing/releases/download/v1.2.4/outbreak-report-writing-1.2.4.tgz
+
+# full bundle (~90 MB, swap the filename for your platform)
+curl -L -o obrw.tar.gz https://ghfast.top/https://github.com/naliehu/outbreak-report-writing/releases/download/v1.2.4/outbreak-report-writing-1.2.4-macos-arm64.tar.gz
+
+# dependencies from a PyPI mirror
+pip install -i https://pypi.tuna.tsinghua.edu.cn/simple -r requirements.txt
+```
+
 ## Quick start
 
 ```bash

@@ -34,6 +34,21 @@ PDF 两种出法：装了 LibreOffice 走 docx→pdf，版式与 Word 一致；�
 
 `vendor/venv` 按打包机器的架构编译，换平台会失效：脚本与插件自动回退到系统 `python3`，或跑一次 `install.sh`（macOS／Linux）／`install.ps1`（Windows）重建。
 
+### 中国大陆网络
+
+GitHub 直连不稳时，把域名换成镜像前缀即可（`https://ghfast.top/`、`https://ghproxy.net/`，一个失效就换另一个；版本号按需要改）：
+
+```bash
+# 装插件（约 0.5 MB）
+dsh plugin add https://ghfast.top/https://github.com/naliehu/outbreak-report-writing/releases/download/v1.2.4/outbreak-report-writing-1.2.4.tgz
+
+# 下载免安装包（约 90 MB，文件名换成对应平台）
+curl -L -o obrw.tar.gz https://ghfast.top/https://github.com/naliehu/outbreak-report-writing/releases/download/v1.2.4/outbreak-report-writing-1.2.4-macos-arm64.tar.gz
+
+# 依赖走国内 PyPI 镜像
+pip install -i https://pypi.tuna.tsinghua.edu.cn/simple -r requirements.txt
+```
+
 ## 快速上手
 
 ```bash

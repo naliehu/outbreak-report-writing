@@ -32,6 +32,21 @@
 
 PDF は二通り：LibreOffice があれば docx → pdf（Word と同一レイアウト）、無ければ内蔵 PyMuPDF が直接組版（内容と図は同じ、レイアウトは独自）。md/docx は外部ソフト不要。
 
+### 中国本土からの利用
+
+GitHub への直結が不安定な場合、URL の先頭にミラーを付けます：`https://ghfast.top/` または `https://ghproxy.net/`（使えなくなったらもう一方へ、バージョンは適宜変更）。
+
+```bash
+# プラグイン（約 0.5 MB）
+dsh plugin add https://ghfast.top/https://github.com/naliehu/outbreak-report-writing/releases/download/v1.2.4/outbreak-report-writing-1.2.4.tgz
+
+# フルパッケージ（約 90 MB、ファイル名は環境に合わせて変更）
+curl -L -o obrw.tar.gz https://ghfast.top/https://github.com/naliehu/outbreak-report-writing/releases/download/v1.2.4/outbreak-report-writing-1.2.4-macos-arm64.tar.gz
+
+# 依存は PyPI ミラーから
+pip install -i https://pypi.tuna.tsinghua.edu.cn/simple -r requirements.txt
+```
+
 ## クイックスタート
 
 ```bash

@@ -10,23 +10,26 @@
     "./package.json": "./package.json"
   },
   "files": [
-    "index.js",
-    "cordis.patch.yml",
-    "SKILL.md",
-    "README.md",
-    "README.en.md",
-    "README.zh-TW.md",
-    "README.de.md",
-    "README.ja.md",
     "LICENSE",
-    "requirements.txt",
-    "install.sh",
+    "README.de.md",
+    "README.en.md",
+    "README.ja.md",
+    "README.md",
+    "README.zh-TW.md",
+    "SKILL.md",
+    "cordis.patch.yml",
+    "index.js",
     "install.ps1",
+    "install.sh",
     "references",
-    "templates",
+    "requirements.txt",
     "scripts",
+    "templates",
     "tests",
-    "vendor"
+    "vendor/flowfig",
+    "vendor/report_engine",
+    "vendor/report_export",
+    "vendor/spec"
   ],
   "dsh": {
     "bundle": {

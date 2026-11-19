@@ -1,0 +1,12 @@
+# npm 包只带插件运行必需的文件；238 MB 的解释器与依赖不发布
+vendor/venv/
+vendor/python/
+.git/
+.github/
+__pycache__/
+*.pyc
+.DS_Store
+e2e_out/
+tests/
+sample/
+*.log

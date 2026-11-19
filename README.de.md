@@ -32,6 +32,21 @@ Kapitelreihenfolge, Stilparameter und Krankheitskriterien sind aus über 1.300 e
 
 PDF auf zwei Wegen: mit LibreOffice über docx → pdf (Layout wie Word); ohne LibreOffice setzt die eingebaute PyMuPDF-Engine (gleicher Inhalt und Abbildungen, eigenes Layout). md/docx brauchen nichts Zusätzliches.
 
+### Festlandchina
+
+Wenn GitHub unzuverlässig ist, die URL mit einem Mirror-Präfix versehen: `https://ghfast.top/` oder `https://ghproxy.net/` (wechseln, wenn einer ausfällt; Version anpassen).
+
+```bash
+# Plugin (~0,5 MB)
+dsh plugin add https://ghfast.top/https://github.com/naliehu/outbreak-report-writing/releases/download/v1.2.4/outbreak-report-writing-1.2.4.tgz
+
+# Vollpaket (~90 MB, Dateiname je Plattform anpassen)
+curl -L -o obrw.tar.gz https://ghfast.top/https://github.com/naliehu/outbreak-report-writing/releases/download/v1.2.4/outbreak-report-writing-1.2.4-macos-arm64.tar.gz
+
+# Abhängigkeiten über einen PyPI-Mirror
+pip install -i https://pypi.tuna.tsinghua.edu.cn/simple -r requirements.txt
+```
+
 ## Schnellstart
 
 ```bash
