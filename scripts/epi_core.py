@@ -92,12 +92,41 @@ def pct(a, b, nd=2):
     return round(100.0 * a / b, nd)
 
 
+_FMT_PCT = re.compile(r"%(?:-(.))|%([A-Za-z%])")
+
+
+def _fmt(d, fmt="%Y年%-m月%-d日"):
+    """跨平台 strftime：Windows 的 CRT 不支持 %-m / %-d 这类 POSIX 去零修饰符。
+
+    做法：普通指令（%Y / %m / %d / %H…）照旧交给平台 strftime 真正展开；
+    `%-X` 先展开 `%X`，再把纯数字结果的前导零剥掉（%a / %b 这类非数字保持原样）。
+    所有平台都走这一条路径，所以 Windows 与 macOS/Linux 输出逐字一致。
+    """
+    if d is None:
+        return "—"
+
+    def _one(m):
+        zero_less, plain = m.group(1), m.group(2)
+        if plain == "%":
+            return "%"
+        code = zero_less or plain
+        try:
+            val = d.strftime("%" + code)
+        except (ValueError, TypeError):
+            return m.group(0)
+        if not zero_less:
+            return val
+        return str(int(val)) if val.isdigit() else val
+
+    return _FMT_PCT.sub(_one, fmt)
+
+
 def fmt_d(d):
-    return d.strftime("%Y年%-m月%-d日") if d else "—"
+    return _fmt(d, "%Y年%-m月%-d日") if d else "—"
 
 
 def fmt_dt(d):
-    return d.strftime("%Y年%-m月%-d日%H时%M分") if d else "—"
+    return _fmt(d, "%Y年%-m月%-d日%H时%M分") if d else "—"
 
 
 # ---------------------------------------------------- 大疫情网个案 CSV 归一

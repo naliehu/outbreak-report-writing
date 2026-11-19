@@ -75,7 +75,7 @@ def _d(v, fmt="%Y年%-m月%-d日"):
         return "—"
     if isinstance(dtv, dt.date) and not isinstance(dtv, dt.datetime):
         dtv = dt.datetime(dtv.year, dtv.month, dtv.day)
-    return dtv.strftime(fmt)
+    return core._fmt(dtv, fmt)
 
 
 # ------------------------------------------------------------------ 视图
@@ -155,13 +155,13 @@ class View(dict):
     # --- 时间与元信息
     @property
     def now_date(self):
-        return (self["event"].get("report_date") or dt.date.today()).strftime("%Y年%-m月%-d日") \
+        return core._fmt(self["event"].get("report_date") or dt.date.today(), "%Y年%-m月%-d日") \
             if not isinstance(self["event"].get("report_date"), str) else self["event"]["report_date"]
 
     @property
     def now_datetime(self):
         t = self["event"].get("report_time")
-        return t if isinstance(t, str) and t else dt.datetime.now().strftime("%Y年%-m月%-d日%H时%M分")
+        return t if isinstance(t, str) and t else core._fmt(dt.datetime.now(), "%Y年%-m月%-d日%H时%M分")
 
     # --- 开篇段
     def _intro_base(self):
@@ -294,7 +294,7 @@ class View(dict):
         txt = f"本次疫情自{first}首例发病，至{last}末例发病，历时{span}天，共{self['stats']['n']}例。"
         if bh:
             bhs = int(bh) if float(bh).is_integer() else bh
-            txt += f"流行曲线以{bhs}{unit}为间隔绘制，发病高峰出现在{_d(peak[0], '%m月%d日')}（{peak[1]}例）。"
+            txt += f"流行曲线以{bhs}{unit}为间隔绘制，发病高峰出现在{_d(peak[0], '%-m月%-d日')}（{peak[1]}例）。"
         gens = self["stats"].get("generations") or []
         if gens:
             gmax = max(g["gen"] for g in gens)
