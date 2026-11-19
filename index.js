@@ -63,7 +63,16 @@ function resolvePython(skillDir, config) {
 
 function run(cmd, args, cwd, timeoutMs = 900_000) {
   return new Promise((resolve) => {
-    execFile(cmd, args, { cwd, timeout: timeoutMs, maxBuffer: 8 * 1024 * 1024, env: cleanEnv() },
+    execFile(cmd, args, {
+      cwd,
+      timeout: timeoutMs,
+      maxBuffer: 8 * 1024 * 1024,
+      env: cleanEnv(),
+      // Windows 上子进程 python 默认按控制台代码页（CP936/GBK）输出，Node 按 UTF-8 解码
+      // 会得到乱码；这里两侧都钉死 UTF-8（见 cleanEnv 的 PYTHONIOENCODING）。
+      encoding: 'utf8',
+      windowsHide: true,   // 不弹控制台黑框；POSIX 上该选项无副作用
+    },
       (err, stdout, stderr) => resolve({ err, stdout: stdout || '', stderr: stderr || '' }))
   })
 }
@@ -74,6 +83,9 @@ function cleanEnv() {
   delete env.PYTHONPATH
   delete env.VIRTUAL_ENV
   delete env.PYTHONHOME
+  // 子进程 python 强制 UTF-8：否则 Windows 上按 CP936 输出，中文 JSON 到这里全是乱码
+  env.PYTHONIOENCODING = 'utf-8'
+  env.PYTHONUTF8 = '1'
   return env
 }
 
