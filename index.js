@@ -190,8 +190,12 @@ export function apply(ctx, config = {}) {
       }
       if (err) {
         payload.error = `生成失败（exit ${err.code ?? '?'}）`
-        payload.hint = '先跑 action=check 看输入体检结果；或确认 python3 已装 pyyaml、jinja2、'
-          + 'python-docx、matplotlib 四项依赖。'
+        const pyName = process.platform === 'win32' ? 'python' : 'python3'
+        payload.hint = `先跑 action=check 看输入体检结果；或确认 ${pyName} 已装 pyyaml、jinja2、`
+          + 'python-docx、matplotlib、jsonschema、pypdf、pymupdf 七项依赖'
+          + (process.platform === 'win32'
+            ? '（免安装包自带 vendor\\python，无需另装；从 git 安装则先在本目录跑一次 install.ps1）。'
+            : '。')
         payload.stderr = stderr.trim().slice(-1500)
         return fail(JSON.stringify(payload, null, 2))
       }

@@ -21,9 +21,20 @@ import md2pdf_fallback as fb  # noqa: E402
 fail = 0
 
 
+def _mark(ok: bool) -> str:
+    """✓/✗ 在 GBK 控制台会抛 UnicodeEncodeError（中文 Windows 控制台默认 CP936）→ 退化成 ASCII。"""
+    fancy, plain = ("✓", "[OK]") if ok else ("✗", "[NO]")
+    enc = getattr(sys.stdout, "encoding", None) or "utf-8"
+    try:
+        fancy.encode(enc, "strict")
+        return fancy
+    except (UnicodeEncodeError, LookupError):
+        return plain
+
+
 def check(cond, label, extra=""):
     global fail
-    print(f"{'✓' if cond else '✗'} {label}{(' — ' + str(extra)) if extra else ''}")
+    print(f"{_mark(cond)} {label}{(' — ' + str(extra)) if extra else ''}")
     fail += 0 if cond else 1
 
 

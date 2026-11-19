@@ -9,13 +9,27 @@ $ErrorActionPreference = "Stop"
 $root = Split-Path -Parent $MyInvocation.MyCommand.Definition
 Set-Location $root
 
+# 中文 Windows 控制台默认 GBK，Python 打印 ✓ / ✗ 会抛 UnicodeEncodeError 把自检打断 → 全程 UTF-8
+$env:PYTHONIOENCODING = "utf-8"
+$env:PYTHONUTF8 = "1"
+try { [Console]::OutputEncoding = [System.Text.Encoding]::UTF8 } catch { }
+
 # 免安装包自带解释器：直接用自带的，不查系统 Python、不建 venv
 $embedded = Join-Path $root "vendor\python\python.exe"
 if (Test-Path $embedded) {
     Write-Host "== 自带解释器模式 ==" -ForegroundColor Green
     Write-Host "   $embedded"
-    & $embedded -m pip install -r requirements.txt --quiet
+    # 依赖已烘进包内；先离线校验，确实缺了才联网补（python-build-standalone 带 PEP 668 标记，
+    # 不加 --break-system-packages 会直接报 error: externally-managed-environment）
+    & $embedded -m pip install -r requirements.txt --quiet --break-system-packages --no-index
+    if ($LASTEXITCODE -ne 0) {
+        Write-Host "   包内依赖不全，联网补齐…" -ForegroundColor Yellow
+        & $embedded -m pip install -r requirements.txt --quiet --break-system-packages
+    }
     & $embedded scripts\flowreport.py doctor
+    if ($LASTEXITCODE -ne 0) {
+        Write-Host "上面两个 ✗ 是公开包的预期状态：没装 LibreOffice 也能出 PDF（内置 PyMuPDF 兜底，版式与 Word 略有差别）；vendor\spec 是私有全量引擎，不随公开包发布。插件与 build_report.py 都不受影响。" -ForegroundColor Yellow
+    }
     exit $LASTEXITCODE
 }
 

@@ -1,5 +1,41 @@
 # 变更记录
 
+## 1.2.4 — 2026-11-19
+
+### 新增：Windows 免安装包（自带解释器与依赖）
+
+- `outbreak-report-writing-1.2.4-windows-x64-embedded.zip`：`vendor/python` 里是一整只 python-build-standalone CPython 3.12.13 加七个依赖（pyyaml / jinja2 / matplotlib / python-docx / jsonschema / pypdf / pymupdf），解压即用——本机不用装 Python，也不用联网 pip。解压后 222 MB，其中解释器与依赖 221.6 MB。
+- 真机实测（Windows 11 + PowerShell 5.1）：四个单测全过（`test_core` 38 项 / `test_deident` 10 项 / `test_fmt` 14 项 / `test_pdf_fallback` 6 项）；端到端出稿 md 5.3 KB、docx 106.6 KB、pdf 299.2 KB（5 页，字体已子集化），三格式 + 脱敏版齐全；解压到全新目录后同样全过，`sys.prefix` 落在包内 `vendor\python`（可整体搬目录）。
+
+### 修复：`dsh plugin add` 会静默丢掉自带解释器（Windows 关键）
+
+- `package.json` 的 `files` 白名单只列了 `scripts` / `templates` / `tests` 等，`vendor` 不在里面。pnpm 安装 `file:` 依赖时按 `files` 打包，于是 `vendor/python` 不进 `node_modules`，插件退回系统 `python`；没装 Python 的机器上首跑就是 `生成失败（exit ENOENT）`。
+- 现在 `files` 补上 `vendor`：`dsh plugin add <解压目录>` 之后 `node_modules/outbreak-report-writing/vendor/python/python.exe` 存在，`resolvePython()` 首选它。已用「PATH 里没有 python」的干净环境复验：零配置出稿 `ok=true`，6 个文件齐全。
+
+### 修复：`flowreport.py doctor` 在中文 Windows 控制台直接崩溃
+
+- 控制台默认 CP936，`print("✓")` 抛 `UnicodeEncodeError: 'gbk' codec can't encode character '\u2713' in position 1`，doctor 在第 6 项后中断；`install.ps1` 的第 4/4 步因此看起来像装坏了。
+- 新增 `_mark()`：先问 `sys.stdout.encoding` 能不能表示 ✓ / ✗，不能就退化成 `[OK]` / `[NO]`；`doctor`、`build`、`gate` 四处标记都改用它。macOS / Linux（UTF-8）行为不变。
+
+### 修复：`install.ps1` 在免安装包里第一步就报错
+
+- 自带解释器模式第一句是 `pip install -r requirements.txt`，而 python-build-standalone 带 PEP 668 的 `Lib\EXTERNALLY-MANAGED`，直接 `error: externally-managed-environment`（exit 1）——用户看到的第一屏就是红字。
+- 改为：先 `--break-system-packages --no-index` 做离线校验（依赖已烘进包内，1 秒通过、不联网）；确实缺才联网补装。
+- 脚本开头统一 `PYTHONIOENCODING=utf-8`、`PYTHONUTF8=1`、`[Console]::OutputEncoding = UTF8`，doctor 的 ✓ 在 PowerShell 里正常显示。
+
+### 修复：三个单测在 GBK 控制台「误报崩溃」
+
+- `test_deident.py` / `test_fmt.py` / `test_pdf_fallback.py` 每条结果都打印 `✓` / `✗`，在中文 Windows 控制台（CP936）里同样抛 `UnicodeEncodeError` —— 明明断言全过，脚本却 exit 1。
+- 三个文件各加一个 `_mark()`：编码装不下 ✓/✗ 时打印 `[OK]` / `[NO]`。现在 `python tests\test_xxx.py` 在 cmd / PowerShell 里直接跑即可，不再需要先设 `PYTHONIOENCODING`。
+
+### 修复：失败提示不再只说 python3
+
+- 插件失败时的 hint 原来固定写「确认 python3 已装 … 四项依赖」——Windows 上该是 `python`，而且实际要七项。改为按平台取 `python` / `python3`、补全七项，并分平台提示：Windows 免安装包自带 `vendor\python` 无需另装，从 git 装则先在本目录跑一次 `install.ps1`。
+
+### 文档
+
+- README 平台包表补 `-windows-x64-embedded.zip` 一行，原 `-windows-x64.zip` 注明是轻量包（需 Python 3.10+）；DSH 插件一节加 Windows 免安装包的 `dsh plugin --profile desktop add …` 用法与解释器挑选顺序；「一次性装齐」改成 `pip install -r requirements.txt`（七个依赖列全）。
+
 ## 1.2.1 — 2026-11-18
 
 ### 新增：Intel 芯片的 Mac 也能解压即用

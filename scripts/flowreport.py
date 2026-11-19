@@ -44,6 +44,22 @@ def _color_enabled() -> bool:
     return sys.stdout.isatty() and os.environ.get("NO_COLOR") is None and not os.environ.get("FLOWREPORT_NO_COLOR")
 
 
+def _encodable(text: str) -> bool:
+    """当前 stdout 编码能否表示该文本：中文 Windows 控制台默认 GBK，码表里没有 ✓ / ✗。"""
+    enc = getattr(sys.stdout, "encoding", None) or "utf-8"
+    try:
+        text.encode(enc, "strict")
+        return True
+    except (UnicodeEncodeError, LookupError):
+        return False
+
+
+def _mark(ok: bool) -> str:
+    """通过 / 失败标记；编码不支持时退化为 ASCII，避免 doctor 在 GBK 控制台抛 UnicodeEncodeError。"""
+    fancy, plain = ("✓", "[OK]") if ok else ("✗", "[NO]")
+    return fancy if _encodable(fancy) else plain
+
+
 class C:
     on = _color_enabled()
 
@@ -175,7 +191,7 @@ def cmd_doctor(args) -> int:
     check("matplotlib 中文字体", _fonts)
 
     for good, name, detail in rows:
-        mark = C.green("✓") if good else C.red("✗")
+        mark = C.green(_mark(True)) if good else C.red(_mark(False))
         print(f" {mark} {name:<22} {detail}")
     if not ok_all:
         print("\n" + C.orange("有检查项未通过：md/docx 仍可出；PDF 需 soffice，图需 matplotlib 中文字体。"))
@@ -505,7 +521,7 @@ def cmd_build(args) -> int:
         for fmt, path in result.files.items():
             print(f"  {fmt:<5} {path}")
         for name, check in result.checks.items():
-            mark = C.green("✓") if check.get("pass") else C.red("✗")
+            mark = C.green(_mark(True)) if check.get("pass") else C.red(_mark(False))
             extra = ""
             if name == "pdf":
                 extra = f"　{check.get('pages')} 页 / 图 {check.get('images')} / 汉字 {check.get('cjk')}"
@@ -515,7 +531,7 @@ def cmd_build(args) -> int:
                 extra = "　" + " ".join(f"{k}={v.get('ratio')}" for k, v in (check.get("perFormat") or {}).items())
             print(f"  [{mark}] {name}{extra}")
         if not result.ok:
-            print(C.red("  导出自检未全通过：见上方 ✗ 项与 warnings"))
+            print(C.red(f"  导出自检未全通过：见上方 {_mark(False)} 项与 warnings"))
         for w in result.warnings:
             print(C.orange(f"  ! {w}"))
 
@@ -552,7 +568,7 @@ def cmd_gate(args) -> int:
     print(C.bold(f"签发门禁 — {report['reportId']} {report['meta']['reportVersion']}　要求级别 {require}"))
     print(C.dim(f"报告状态 {comp['state']} {comp['stateLabel']}（状态机 READY ≠ 可签发，签发看本门禁）"))
     for label, value, passed in checks:
-        mark = C.green("✓") if passed else C.red("✗")
+        mark = C.green(_mark(True)) if passed else C.red(_mark(False))
         print(f"  {mark} {label}　实际 {value}")
     if ok:
         print("\n" + C.green(f"通过：按 {require} 口径可签发。"))

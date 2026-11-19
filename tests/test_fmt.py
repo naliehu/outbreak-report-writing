@@ -6,13 +6,24 @@ import sys
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "scripts"))
 import epi_core as core  # noqa: E402
 
+
+def _mark(ok: bool) -> str:
+    """✓/✗ 在 GBK 控制台会抛 UnicodeEncodeError（中文 Windows 控制台默认 CP936）→ 退化成 ASCII。"""
+    fancy, plain = ("✓", "[OK]") if ok else ("✗", "[NO]")
+    enc = getattr(sys.stdout, "encoding", None) or "utf-8"
+    try:
+        fancy.encode(enc, "strict")
+        return fancy
+    except (UnicodeEncodeError, LookupError):
+        return plain
+
 fail = 0
 
 
 def eq(got, want, label):
     global fail
     ok = got == want
-    print(f"{'✓' if ok else '✗'} {label}: {got!r}" + ("" if ok else f"  期望 {want!r}"))
+    print(f"{_mark(ok)} {label}: {got!r}" + ("" if ok else f"  期望 {want!r}"))
     fail += 0 if ok else 1
 
 

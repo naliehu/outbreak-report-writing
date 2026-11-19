@@ -67,7 +67,8 @@ python3 ~/.dsh/skills/outbreak-report-writing/scripts/flowreport.py doctor
 |---|---|---|
 | macOS（Apple Silicon） | `outbreak-report-writing-<ver>-macos-arm64.tar.gz` | 含 `vendor/venv`（arm64，自带独立解释器），解压改路径即用，无需 pip、不依赖本机 Python |
 | macOS（Intel） | `outbreak-report-writing-<ver>-macos-x86_64.tar.gz` | 含 `vendor/venv`（x86_64，自带独立解释器），Intel 机型解压即用，无需 pip |
-| Windows（x64） | `outbreak-report-writing-<ver>-windows-x64.zip` | 含 `vendor/` 代码但不含 venv，先跑一次 `install.ps1` 建环境（需 Python 3.10+） |
+| Windows（x64，免安装） | `outbreak-report-writing-<ver>-windows-x64-embedded.zip` | 含 `vendor/python`（整只 CPython 3.12 + 全部依赖），解压即用；装成 DSH 插件时自带解释器一并复制，**完全不碰本机 Python** |
+| Windows（x64，轻量） | `outbreak-report-writing-<ver>-windows-x64.zip` | 只有代码、不含解释器；先跑一次 `install.ps1` 建 `vendor\venv`（需 Python 3.10+） |
 | 任意平台 | `git clone` | 轻量版直接可用；要全量得自备 `vendor/` |
 
 PDF 有两条路：装了 LibreOffice（macOS：`brew install --cask libreoffice`；Windows：装 LibreOffice 后默认在 Program Files 下，也可用 `SOFFICE_BIN` 指定）就走 docx→pdf，版式与 Word 完全一致；**没装也不必折腾**，程序会自动用内置的 PyMuPDF 排版引擎出 PDF（内容、图表、分页齐全，版式是独立一套，与 docx 版略有差别）。md/docx 不依赖任何外部程序。
@@ -129,6 +130,17 @@ dsh plugin --profile web add github:naliehu/outbreak-report-writing
 dsh --profile web          # 重启后生效，直接说「用 epi_report 出一份初次报告」
 ```
 
+Windows 推荐用免安装包（自带解释器与依赖，本机不需要装 Python）：
+
+```powershell
+# 解压 outbreak-report-writing-<ver>-windows-x64-embedded.zip 后，在该目录执行
+dsh plugin --profile desktop add .\outbreak-report-writing-1.2.4-windows-x64-embedded
+```
+
+`package.json` 的 `files` 里列了 `vendor`，所以 `dsh plugin add` 会把整只解释器一起复制进
+`node_modules`，插件按 `vendor\venv\Scripts\python.exe` → `vendor\python\python.exe` → `python`
+的顺序挑，命中第一个就够用；同理，从 git 装（无 `vendor/`）时会退回系统的 `python`。
+
 工具参数：`action`（build／check）、`event_path`（事件 YAML/JSON，必填）、`stage`
 （initial／progress／final／closure／case）、`line_list`（个案 CSV）、`out_dir`、`formats`、`docx_profile`。
 
@@ -143,7 +155,8 @@ dsh --profile web          # 重启后生效，直接说「用 epi_report 出一
 | 再加 matplotlib | 加四张叙事图与三间分布图 |
 | 再加 python-docx | 加 Word；系统有 LibreOffice 则连 PDF 一起出 |
 
-一次性装齐：`python3 -m pip install pyyaml jinja2 matplotlib python-docx`
+一次性装齐：`python3 -m pip install -r requirements.txt`（Windows 用 `python -m pip install -r requirements.txt`；
+七个依赖是 pyyaml、jinja2、matplotlib、python-docx、jsonschema、pypdf、pymupdf）。
 
 配置（写在 profile 的 `cordis.patch.yml` 里，可全部省略）：
 
@@ -153,7 +166,8 @@ dsh --profile web          # 重启后生效，直接说「用 epi_report 出一
       name: 'outbreak-report-writing'
       config:
         skillDir: ~/path/to/outbreak-report-writing   # 默认自动查找
-        python: /usr/bin/python3                      # 默认优先用 vendor/venv/bin/python
+        python: /usr/bin/python3                      # 默认优先用 vendor/venv，其次 vendor/python
+                                                      # Windows 例：C:\tools\obrw\vendor\python\python.exe
         outDir: ~/流调输出                             # 默认 <事件文件同级>/流调输出
 ```
 
