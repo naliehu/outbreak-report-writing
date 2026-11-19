@@ -34,6 +34,15 @@ PDF has two routes: with LibreOffice it goes docx → pdf and matches Word; with
 
 ### Mainland China
 
+The plugin is on npm. With a domestic mirror it installs in under a second (0.5 MB):
+
+```bash
+npm config set registry https://registry.npmmirror.com
+dsh plugin add outbreak-report-writing
+```
+
+The npm build is the light one — no interpreter, no dependencies. Run `bash install.sh` (or `install.ps1`) once before first use. For a self-contained bundle, use the archives below.
+
 Where GitHub is unreliable, prefix the URL with a mirror: `https://ghfast.top/` or `https://ghproxy.net/` (swap when one stops working; change the version as needed).
 
 ```bash

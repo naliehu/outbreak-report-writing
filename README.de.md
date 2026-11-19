@@ -34,6 +34,15 @@ PDF auf zwei Wegen: mit LibreOffice über docx → pdf (Layout wie Word); ohne L
 
 ### Festlandchina
 
+Das Plugin liegt auf npm. Mit einem Mirror ist es in unter einer Sekunde installiert (0,5 MB):
+
+```bash
+npm config set registry https://registry.npmmirror.com
+dsh plugin add outbreak-report-writing
+```
+
+Die npm-Version ist die schlanke: kein Interpreter, keine Abhängigkeiten. Vor dem ersten Einsatz einmal `bash install.sh` (oder `install.ps1`) ausführen. Für ein sofort lauffähiges Paket die Archive unten nehmen.
+
 Wenn GitHub unzuverlässig ist, die URL mit einem Mirror-Präfix versehen: `https://ghfast.top/` oder `https://ghproxy.net/` (wechseln, wenn einer ausfällt; Version anpassen).
 
 ```bash

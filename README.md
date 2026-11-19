@@ -36,6 +36,15 @@ PDF 两种出法：装了 LibreOffice 走 docx→pdf，版式与 Word 一致；�
 
 ### 中国大陆网络
 
+插件已发到 npm，配国内镜像后一条命令（0.5 MB，实测 0.8 秒装完）：
+
+```bash
+npm config set registry https://registry.npmmirror.com
+dsh plugin add outbreak-report-writing
+```
+
+npm 上的是轻量版，不含解释器与依赖，首次使用前跑一次 `bash install.sh`（macOS／Linux）或 `install.ps1`（Windows）。要开箱即用就用下面的完整包。
+
 GitHub 直连不稳时，把域名换成镜像前缀即可（`https://ghfast.top/`、`https://ghproxy.net/`，一个失效就换另一个；版本号按需要改）：
 
 ```bash

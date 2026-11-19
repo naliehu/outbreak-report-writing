@@ -34,6 +34,15 @@ PDF は二通り：LibreOffice があれば docx → pdf（Word と同一レイ�
 
 ### 中国本土からの利用
 
+プラグインは npm に公開済み。ミラーを設定すれば 1 秒以内にインストールできます（0.5 MB）：
+
+```bash
+npm config set registry https://registry.npmmirror.com
+dsh plugin add outbreak-report-writing
+```
+
+npm 版は軽量版（インタプリタと依存を含みません）。初回使用前に `bash install.sh`（または `install.ps1`）を一度実行してください。すぐ動く完全版は下のアーカイブを使ってください。
+
 GitHub への直結が不安定な場合、URL の先頭にミラーを付けます：`https://ghfast.top/` または `https://ghproxy.net/`（使えなくなったらもう一方へ、バージョンは適宜変更）。
 
 ```bash

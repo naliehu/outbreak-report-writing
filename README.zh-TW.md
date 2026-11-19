@@ -36,6 +36,15 @@ PDF 兩種出法：裝了 LibreOffice 走 docx→pdf，版式與 Word 一致；�
 
 ### 中國大陸網路
 
+外掛已發佈到 npm，設定國內鏡像後一條指令（0.5 MB，實測 0.8 秒裝完）：
+
+```bash
+npm config set registry https://registry.npmmirror.com
+dsh plugin add outbreak-report-writing
+```
+
+npm 上的是輕量版，不含解譯器與相依套件，首次使用前跑一次 `bash install.sh`（macOS／Linux）或 `install.ps1`（Windows）。要開箱即用請用下面的完整包。
+
 GitHub 直連不穩時，把網域換成鏡像前綴即可（`https://ghfast.top/`、`https://ghproxy.net/`，一個失效就換另一個；版本號依需要調整）：
 
 ```bash
