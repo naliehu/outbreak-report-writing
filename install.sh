@@ -9,6 +9,15 @@
 set -euo pipefail
 cd "$(dirname "$0")"
 
+# 免安装包自带解释器：直接用自带的，不查系统 Python、不建 venv
+if [ -x vendor/python/bin/python3 ]; then
+  echo "== 自带解释器模式 ==="
+  echo "   vendor/python/bin/python3"
+  env -u PYTHONPATH -u VIRTUAL_ENV vendor/python/bin/python3 -m pip install -r requirements.txt --quiet
+  env -u PYTHONPATH -u VIRTUAL_ENV vendor/python/bin/python3 scripts/flowreport.py doctor
+  exit $?
+fi
+
 echo "== 1/4 查找 python3 =="
 PY=$(command -v python3 || true)
 [ -n "$PY" ] || { echo "未找到 python3，请先安装 Python 3.10+"; exit 1; }

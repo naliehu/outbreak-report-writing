@@ -9,6 +9,16 @@ $ErrorActionPreference = "Stop"
 $root = Split-Path -Parent $MyInvocation.MyCommand.Definition
 Set-Location $root
 
+# 免安装包自带解释器：直接用自带的，不查系统 Python、不建 venv
+$embedded = Join-Path $root "vendor\python\python.exe"
+if (Test-Path $embedded) {
+    Write-Host "== 自带解释器模式 ==" -ForegroundColor Green
+    Write-Host "   $embedded"
+    & $embedded -m pip install -r requirements.txt --quiet
+    & $embedded scripts\flowreport.py doctor
+    exit $LASTEXITCODE
+}
+
 Write-Host "== 1/4 查找 Python ==" -ForegroundColor Cyan
 $py = $null
 foreach ($cand in @("python", "py")) {

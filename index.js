@@ -50,15 +50,20 @@ function resolveSkillDir(config) {
   return PKG_DIR
 }
 
-/** 解释器：配置 → vendor/venv（按平台选 bin/python 或 Scripts/python.exe）→ 系统 python。 */
+/** 解释器：配置 → vendor/venv（install 脚本生成）→ vendor/python（免安装包自带）→ 系统 python。 */
 function resolvePython(skillDir, config) {
   if (config?.python) return config.python
-  const venv = path.join(skillDir, 'vendor', 'venv')
-  const venvPy = process.platform === 'win32'
-    ? path.join(venv, 'Scripts', 'python.exe')
-    : path.join(venv, 'bin', 'python')
+  const win = process.platform === 'win32'
+  const venvPy = win
+    ? path.join(skillDir, 'vendor', 'venv', 'Scripts', 'python.exe')
+    : path.join(skillDir, 'vendor', 'venv', 'bin', 'python')
   if (existsSync(venvPy)) return venvPy
-  return process.platform === 'win32' ? 'python' : 'python3'
+  // 免安装包把整套解释器放在 vendor/python：解压即用，不碰系统 Python
+  const embedded = win
+    ? path.join(skillDir, 'vendor', 'python', 'python.exe')
+    : path.join(skillDir, 'vendor', 'python', 'bin', 'python3')
+  if (existsSync(embedded)) return embedded
+  return win ? 'python' : 'python3'
 }
 
 function run(cmd, args, cwd, timeoutMs = 900_000) {
