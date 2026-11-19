@@ -18,6 +18,8 @@ from __future__ import annotations
 
 import os
 import re
+import shutil
+import sys
 import tempfile
 from pathlib import Path
 
@@ -221,20 +223,62 @@ def md_to_pdf(md_path, pdf_path=None, title: str | None = None) -> Path:
         html = f"<h1>{_esc(title)}</h1>\n{html}"
 
     story = pymupdf.Story(html=html, user_css=css, archive=archive)
-    writer = pymupdf.DocumentWriter(str(pdf_path))
-    mediabox = pymupdf.paper_rect("a4")
-    where = mediabox + (56, 54, -56, -54)   # 约 2 cm 页边距
-    more = 1
-    guard = 0
-    while more and guard < 500:
-        dev = writer.begin_page(mediabox)
-        more, _ = story.place(where)
-        story.draw(dev)
-        writer.end_page()
-        guard += 1
-    writer.close()
-    _compress_pdf(pdf_path)
+    # 先写同目录的暂存文件，压缩完再原子替换到目标路径。
+    # 直接让 DocumentWriter 写目标文件时，Windows 上的写句柄释放滞后，
+    # 随后的 os.replace 会抛 PermissionError(WinError 5)，字体子集化被静默跳过、
+    # PDF 停在整包嵌入的几十 MB。暂存后替换，三个平台的路径完全一致。
+    fd, staging = tempfile.mkstemp(suffix=".pdf", dir=str(Path(pdf_path).parent))
+    os.close(fd)
+    try:
+        writer = pymupdf.DocumentWriter(staging)
+        mediabox = pymupdf.paper_rect("a4")
+        where = mediabox + (56, 54, -56, -54)   # 约 2 cm 页边距
+        more = 1
+        guard = 0
+        while more and guard < 500:
+            dev = writer.begin_page(mediabox)
+            more, _ = story.place(where)
+            story.draw(dev)
+            writer.end_page()
+            guard += 1
+        writer.close()
+        del writer                     # 显式释放写句柄，不等 GC 回收
+        _compress_pdf(staging)         # 内部失败只告警，不抛
+        try:
+            _replace_with_retry(staging, str(pdf_path))
+        except Exception as exc:       # 替换始终不成，至少把成品交出去
+            print(f"[md2pdf] 替换目标文件失败，改用直接拷贝: {type(exc).__name__}: {exc}",
+                  file=sys.stderr)
+            shutil.copyfile(staging, str(pdf_path))
+    finally:
+        if os.path.exists(staging):
+            try:
+                os.remove(staging)
+            except OSError:
+                pass
     return pdf_path
+
+
+def _replace_with_retry(src, dst, attempts=5) -> None:
+    """os.replace 在 Windows 上可能撞上尚未释放的文件句柄（WinError 5）。
+
+    close() 之后句柄释放可能滞后，gc 一轮再退避重试；POSIX 上第一次就成功，
+    所以这条重试逻辑对三个平台是同一份代码，不引入 Windows 专用分支。
+    """
+    import gc
+    import time
+
+    last = None
+    for i in range(attempts):
+        try:
+            os.replace(src, dst)
+            return
+        except PermissionError as exc:
+            last = exc
+            gc.collect()
+            time.sleep(0.2 * (i + 1))
+    if last is not None:
+        raise last
 
 
 def _compress_pdf(pdf_path) -> None:
@@ -245,26 +289,27 @@ def _compress_pdf(pdf_path) -> None:
     """
     import pymupdf  # 与 md_to_pdf 一样按需导入，避免模块级硬依赖
 
+    tmp = str(pdf_path) + ".tmp"
     try:
         doc = pymupdf.open(str(pdf_path))
         try:
             if not hasattr(doc, "subset_fonts"):
-                doc.close()
                 return
             doc.subset_fonts()
-            tmp = str(pdf_path) + ".tmp"
             doc.save(tmp, garbage=4, deflate=True)
         finally:
             doc.close()
-        os.replace(tmp, str(pdf_path))
-    except Exception:
-        # 压缩是优化项，失败不影响出稿
-        for leftover in (str(pdf_path) + ".tmp",):
-            if os.path.exists(leftover):
-                try:
-                    os.remove(leftover)
-                except OSError:
-                    pass
+        _replace_with_retry(tmp, str(pdf_path))
+    except Exception as exc:
+        # 压缩是优化项，失败不影响出稿——但必须留痕，静默失败会让人以为 36 MB 是正常体积
+        print(f"[md2pdf] 字体子集化失败（已保留未压缩 PDF）: {type(exc).__name__}: {exc}",
+              file=sys.stderr)
+    finally:
+        if os.path.exists(tmp):
+            try:
+                os.remove(tmp)
+            except OSError:
+                pass
 
 
 if __name__ == "__main__":
