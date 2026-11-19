@@ -43,7 +43,11 @@ xx市xx区xx小学，共480名学生。
 | 女 | 6 | 50.0% |
 """
 
-tmpdir = Path(tempfile.mkdtemp(prefix="pdftest_", dir=os.path.expanduser("~/.hermes/cache/scratch")))
+_scratch = os.path.expanduser("~/.hermes/cache/scratch")
+if not os.path.isdir(_scratch):
+    # 打包机上没有这个缓存目录（如 Windows）时回退系统临时目录，行为不变
+    _scratch = tempfile.gettempdir()
+tmpdir = Path(tempfile.mkdtemp(prefix="pdftest_", dir=_scratch))
 md_path = tmpdir / "报告.md"
 md_path.write_text(MD, encoding="utf-8")
 

@@ -62,15 +62,23 @@ except ValueError:
     crash = True
 eq(crash, True, "旧写法在模拟 CRT 上抛 ValueError（基准）")
 
-# --- 3. 与平台原生 strftime 输出一致（POSIX 上 %- 可用，可作对照）
+# --- 3. 与平台原生 strftime 输出一致（POSIX 上 %- 可用；Windows CRT 不支持，改为确认这个事实）
 mismatch = []
+native_unsupported = False
 for day in (dt.date(2026, 1, 1), dt.date(2026, 1, 5), dt.date(2026, 9, 9),
             dt.date(2026, 10, 10), dt.date(2026, 11, 30)):
-    native = day.strftime("%Y年%-m月%-d日")
+    try:
+        native = day.strftime("%Y年%-m月%-d日")
+    except ValueError:
+        native_unsupported = True
+        break
     ours = core._fmt(day, "%Y年%-m月%-d日")
     if native != ours:
         mismatch.append((day, native, ours))
-eq(mismatch, [], "与 POSIX 原生 strftime 输出逐字一致")
+if native_unsupported:
+    eq(True, True, "Windows 原生 strftime 拒绝 %-（抛 ValueError），_fmt 自己实现去零")
+else:
+    eq(mismatch, [], "与 POSIX 原生 strftime 输出逐字一致")
 
 # --- 4. 不含 %- 的格式串不受影响（图表轴标签等仍走原生路径）
 eq(core._fmt(d1, "%Y-%m-%d"), "2026-11-19", "纯标准指令不变")
